@@ -18,25 +18,30 @@ typedef double f64;
 
 typedef int32_t b32;
 
-#define internal static
-#define global_var static
-#define local_var static
-
 #include <vector>
 #include <string>
 #include <memory>
+#include <iostream>
+#include <sys/mman.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+
+#define internal static
+#define global_var static
+#define local_var static
 
 #include "math.h"
 #include "utils.h"
 #include "input.h"
 
-enum class RendererAPI 
+enum class RendererType
 {
     OpenGL_API
 };
 
-global_var RendererAPI renderer_api = RendererAPI::OpenGL_API;
+#define GRAPHICS_PLATFORM_API OPEN_GL
+
+global_var RendererType renderer_type = RendererType::OpenGL_API;
 
 //TODO: split renderer api
 #include "renderer_types.h"

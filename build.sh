@@ -23,7 +23,7 @@ OpenGLFlags="-framework OpenGL"
 PathFlags="-Wl,-rpath,@loader_path"
 
 # Build a 64-bit version
-$CXX $CommonFlags ../src/game.cpp -fPIC -shared -o game.so.temp
+$CXX $CommonFlags ../src/game.cpp -fPIC -shared -o game.so.temp -L/usr/local/lib -lSDL2 -ldl -l SDL2_image $OpenGLFlags
 mv game.so.temp game.so
 
 # Build SDL handmade

@@ -25,7 +25,10 @@ internal GLenum mapElemToShaderType(ShaderDataType type)
 
 struct OpenGLShader : public Shader
 {
-    OpenGLShader() = default;
+    OpenGLShader() {
+        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+    }
+
     ~OpenGLShader() {}
 
     OpenGLShader(OpenGL *open_gl): open_gl{open_gl} {}
@@ -83,7 +86,10 @@ void OpenGLShader::createProgram(const char *vertex_shader_src, const char *frag
 
 struct OpenGLVertexBuffer : public VertexBuffer
 {
-    OpenGLVertexBuffer() = default;
+    OpenGLVertexBuffer() {
+        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+    }
+
     ~OpenGLVertexBuffer() {}
 
     OpenGLVertexBuffer(OpenGL *open_gl): open_gl{open_gl} {}
@@ -151,7 +157,10 @@ inline void OpenGLVertexBuffer::unbind()
 
 struct OpenGLIndexBuffer : public IndexBuffer
 {
-    OpenGLIndexBuffer() = default;
+    OpenGLIndexBuffer() {
+        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+    }
+
     ~OpenGLIndexBuffer() {}
 
     OpenGLIndexBuffer(OpenGL *open_gl): open_gl{open_gl} {}
@@ -184,7 +193,9 @@ inline void OpenGLIndexBuffer::unbind()
 
 struct OpenGLVertexArray : public VertexArray
 {
-    OpenGLVertexArray() = default;
+    OpenGLVertexArray() {
+        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+    }
 
     OpenGLVertexArray(OpenGL *open_gl): open_gl{open_gl} {}
     
@@ -248,8 +259,8 @@ inline void OpenGLVertexArray::unbind()
 
 std::shared_ptr<VertexBuffer> VertexBuffer::instance()
 {
-    switch (renderer_api) {
-        case RendererAPI::OpenGL_API:
+    switch (renderer_type) {
+        case RendererType::OpenGL_API:
             return std::make_shared<OpenGLVertexBuffer>();
     }
 
@@ -258,8 +269,8 @@ std::shared_ptr<VertexBuffer> VertexBuffer::instance()
 
 std::shared_ptr<IndexBuffer> IndexBuffer::instance()
 {
-    switch (renderer_api) {
-        case RendererAPI::OpenGL_API:
+    switch (renderer_type) {
+        case RendererType::OpenGL_API:
             return std::make_shared<OpenGLIndexBuffer>();
     }
 
@@ -268,8 +279,8 @@ std::shared_ptr<IndexBuffer> IndexBuffer::instance()
 
 std::shared_ptr<VertexArray> VertexArray::instance()
 {
-    switch (renderer_api) {
-        case RendererAPI::OpenGL_API:
+    switch (renderer_type) {
+        case RendererType::OpenGL_API:
             return std::make_shared<OpenGLVertexArray>();
     }
 
@@ -278,11 +289,21 @@ std::shared_ptr<VertexArray> VertexArray::instance()
 
 std::shared_ptr<Shader> Shader::instance()
 {
-    switch (renderer_api) {
-        case RendererAPI::OpenGL_API:
+    switch (renderer_type) {
+        case RendererType::OpenGL_API:
             return std::make_shared<OpenGLShader>();
     }
 
     return nullptr;
 }
 
+RendererAPI *RendererAPI::instance()
+{
+#if GRAPHICS_PLATFORM_API == OPEN_GL
+    global_var RendererAPI *instance = new OpenGLRendererAPI();
+    return instance;
+#else
+    std::cerr << "Not supported graphics api\n";
+    return nullptr;
+#endif
+}

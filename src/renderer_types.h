@@ -33,6 +33,19 @@ internal u32 mapShaderTypeToSize(ShaderDataType type)
     return None;
 }
 
+class RendererAPI
+{
+public:
+    static RendererAPI *instance();
+    
+    virtual void init(SDL_Window *window) = 0;
+    virtual void *getContext() = 0; 
+    virtual ~RendererAPI() {}
+protected:
+    RendererAPI() {}
+};
+
+
 struct Element
 {
     Element() = default;
@@ -122,4 +135,9 @@ struct Shader
     virtual ~Shader() = default;
 };
 
+struct RendererData
+{
+    Shader *shader;
+    VertexArray *vao;
+};
 #endif

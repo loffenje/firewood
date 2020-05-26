@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <assert.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
@@ -221,7 +220,7 @@ int main()
                                           SDL_WINDOWPOS_UNDEFINED,
                                           960,
                                           540,
-                                          SDL_WINDOW_RESIZABLE);
+                                          SDL_WINDOW_RESIZABLE|SDL_WINDOW_OPENGL);
 
     if (!window) {
         fprintf(stderr, "SDL_CreateWindow error: %s", SDL_GetError());
@@ -251,7 +250,11 @@ int main()
     game_code.function_names = SDLx_GameFunctionTableNames;
     game_code.functions = reinterpret_cast<void **>(&game);
     game_code.loadCode();
-
+    
+    RendererAPI *renderer_api = RendererAPI::instance();
+    renderer_api->init(window);
+    
+    RendererAPI::instance();
     f32 target_seconds_per_frame = 1 / game_update_hz;
     //*********** GAME LOOP *********************//
     while (g_running) {
