@@ -220,12 +220,13 @@ int main()
                                           SDL_WINDOWPOS_UNDEFINED,
                                           960,
                                           540,
-                                          SDL_WINDOW_RESIZABLE|SDL_WINDOW_OPENGL);
+                                          SDL_WINDOW_RESIZABLE|SDL_WINDOW_HIDDEN|SDL_WINDOW_OPENGL);
 
     if (!window) {
         fprintf(stderr, "SDL_CreateWindow error: %s", SDL_GetError());
     } 
     
+    SDL_ShowWindow(window); 
     //SDL_GLContext context; 
     g_running = true;
     
@@ -242,6 +243,9 @@ int main()
     GameInput input[2] = {};
     auto new_input = &input[0];
     auto old_input = &input[1];
+   
+    renderer_api = RendererAPI::instance(); 
+    renderer_api->init(window);
     
     SDLx_GameFunctionTable game = {};
     SDLx_LoadedCode game_code = {};
@@ -251,10 +255,7 @@ int main()
     game_code.functions = reinterpret_cast<void **>(&game);
     game_code.loadCode();
     
-    RendererAPI *renderer_api = RendererAPI::instance();
-    renderer_api->init(window);
     
-    RendererAPI::instance();
     f32 target_seconds_per_frame = 1 / game_update_hz;
     //*********** GAME LOOP *********************//
     while (g_running) {
@@ -273,7 +274,7 @@ int main()
         SDLx_ProcessEvents(state, new_keyboard_controller);
 
         if (game.updateAndRenderer) {
-            game.updateAndRenderer(new_input);
+            game.updateAndRenderer(new_input, renderer_api);
         }
 
         b32 should_be_reloaded = game_code.isCodeChanged();
@@ -282,6 +283,7 @@ int main()
         }
 
         swapInput(&new_input, &old_input);
+        SDL_GL_SwapWindow(window);
     }
     
     //SDL_GL_DeleteContext(context);

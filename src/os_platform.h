@@ -39,16 +39,23 @@ enum class RendererType
     OpenGL_API
 };
 
+
 #define GRAPHICS_PLATFORM_API OPEN_GL
 
-global_var RendererType renderer_type = RendererType::OpenGL_API;
 
 //TODO: split renderer api
 #include "renderer_types.h"
+
+global_var RendererType renderer_type = RendererType::OpenGL_API;
+global_var RendererAPI *renderer_api;
+
 #include "opengl_platform.cpp"
 
+
+
 struct RendererCommands;
-#define UPDATE_AND_RENDER(name) int name(GameInput *input)
+#define UPDATE_AND_RENDER(name) int name(GameInput *input, RendererAPI *renderer)
+
 typedef UPDATE_AND_RENDER(update_and_render);
 
 struct SDLx_GameFunctionTable {

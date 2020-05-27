@@ -114,7 +114,14 @@ class OpenGLRendererAPI : public RendererAPI
     void init(SDL_Window *window) override;
     void setAttributes();
     OpenGL *rendererAlloc(size_t size);
+    void clear() override;
 };
+
+void OpenGLRendererAPI::clear()
+{
+    glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+}
 
 void *OpenGLRendererAPI::getContext() 
 {
@@ -148,57 +155,56 @@ void OpenGLRendererAPI::setAttributes()
 void OpenGLRendererAPI::init(SDL_Window *window)
 {
     context = rendererAlloc(sizeof(OpenGL));
-    
     setAttributes();
     
     SDL_GLContext sdl_context = SDL_GL_CreateContext(window);
     if (sdl_context) {
         SDL_GL_MakeCurrent(window,sdl_context);
-#define OSX_GetOpenGLFunction(name) context->name = (type_##name *)SDL_GL_GetProcAddress(#name)
+#define SDL_GetOpenGLFunction(name) context->name = (type_##name *)SDL_GL_GetProcAddress(#name)
 
-        OSX_GetOpenGLFunction(glTexImage2DMultisample);
-        OSX_GetOpenGLFunction(glBlitFramebuffer);
-        OSX_GetOpenGLFunction(glAttachShader);
-        OSX_GetOpenGLFunction(glCompileShader);
-        OSX_GetOpenGLFunction(glCreateProgram);
-        OSX_GetOpenGLFunction(glCreateShader);
-        OSX_GetOpenGLFunction(glLinkProgram);
-        OSX_GetOpenGLFunction(glShaderSource);
-        OSX_GetOpenGLFunction(glUseProgram);
-        OSX_GetOpenGLFunction(glGetProgramInfoLog);
-        OSX_GetOpenGLFunction(glGetShaderInfoLog);
-        OSX_GetOpenGLFunction(glValidateProgram);
-        OSX_GetOpenGLFunction(glGetProgramiv);
-        OSX_GetOpenGLFunction(glGetUniformLocation);
-        OSX_GetOpenGLFunction(glUniform4fv);
-        OSX_GetOpenGLFunction(glUniformMatrix4fv);
-        OSX_GetOpenGLFunction(glUniform1i);
-        OSX_GetOpenGLFunction(glBufferSubData);
-        OSX_GetOpenGLFunction(glEnableVertexAttribArray);
-        OSX_GetOpenGLFunction(glDisableVertexAttribArray);
-        OSX_GetOpenGLFunction(glGetAttribLocation);
-        OSX_GetOpenGLFunction(glVertexAttribPointer);
-        OSX_GetOpenGLFunction(glVertexAttribIPointer);
-        OSX_GetOpenGLFunction(glDebugMessageCallbackARB);
-        OSX_GetOpenGLFunction(glBindVertexArray);
-        OSX_GetOpenGLFunction(glGenVertexArrays);
-        OSX_GetOpenGLFunction(glBindBuffer);
-        OSX_GetOpenGLFunction(glGenBuffers);
-        OSX_GetOpenGLFunction(glBufferData);
-        OSX_GetOpenGLFunction(glActiveTexture);
-        OSX_GetOpenGLFunction(glGetStringi);
-        OSX_GetOpenGLFunction(glDeleteProgram);
-        OSX_GetOpenGLFunction(glDeleteShader);
-        OSX_GetOpenGLFunction(glDeleteFramebuffers);
-        OSX_GetOpenGLFunction(glDrawBuffers);
-        OSX_GetOpenGLFunction(glTexImage3D);
-        OSX_GetOpenGLFunction(glTexSubImage3D);
-        OSX_GetOpenGLFunction(glDrawElementsBaseVertex);
-        OSX_GetOpenGLFunction(glUniform1f);
-        OSX_GetOpenGLFunction(glUniform4f);
-        OSX_GetOpenGLFunction(glUniform2fv);
-        OSX_GetOpenGLFunction(glUniform3fv);
-        OSX_GetOpenGLFunction(glGenerateMipmap);
+        SDL_GetOpenGLFunction(glTexImage2DMultisample);
+        SDL_GetOpenGLFunction(glBlitFramebuffer);
+        SDL_GetOpenGLFunction(glAttachShader);
+        SDL_GetOpenGLFunction(glCompileShader);
+        SDL_GetOpenGLFunction(glCreateProgram);
+        SDL_GetOpenGLFunction(glCreateShader);
+        SDL_GetOpenGLFunction(glLinkProgram);
+        SDL_GetOpenGLFunction(glShaderSource);
+        SDL_GetOpenGLFunction(glUseProgram);
+        SDL_GetOpenGLFunction(glGetProgramInfoLog);
+        SDL_GetOpenGLFunction(glGetShaderInfoLog);
+        SDL_GetOpenGLFunction(glValidateProgram);
+        SDL_GetOpenGLFunction(glGetProgramiv);
+        SDL_GetOpenGLFunction(glGetUniformLocation);
+        SDL_GetOpenGLFunction(glUniform4fv);
+        SDL_GetOpenGLFunction(glUniformMatrix4fv);
+        SDL_GetOpenGLFunction(glUniform1i);
+        SDL_GetOpenGLFunction(glBufferSubData);
+        SDL_GetOpenGLFunction(glEnableVertexAttribArray);
+        SDL_GetOpenGLFunction(glDisableVertexAttribArray);
+        SDL_GetOpenGLFunction(glGetAttribLocation);
+        SDL_GetOpenGLFunction(glVertexAttribPointer);
+        SDL_GetOpenGLFunction(glVertexAttribIPointer);
+        SDL_GetOpenGLFunction(glDebugMessageCallbackARB);
+        SDL_GetOpenGLFunction(glBindVertexArray);
+        SDL_GetOpenGLFunction(glGenVertexArrays);
+        SDL_GetOpenGLFunction(glBindBuffer);
+        SDL_GetOpenGLFunction(glGenBuffers);
+        SDL_GetOpenGLFunction(glBufferData);
+        SDL_GetOpenGLFunction(glActiveTexture);
+        SDL_GetOpenGLFunction(glGetStringi);
+        SDL_GetOpenGLFunction(glDeleteProgram);
+        SDL_GetOpenGLFunction(glDeleteShader);
+        SDL_GetOpenGLFunction(glDeleteFramebuffers);
+        SDL_GetOpenGLFunction(glDrawBuffers);
+        SDL_GetOpenGLFunction(glTexImage3D);
+        SDL_GetOpenGLFunction(glTexSubImage3D);
+        SDL_GetOpenGLFunction(glDrawElementsBaseVertex);
+        SDL_GetOpenGLFunction(glUniform1f);
+        SDL_GetOpenGLFunction(glUniform4f);
+        SDL_GetOpenGLFunction(glUniform2fv);
+        SDL_GetOpenGLFunction(glUniform3fv);
+        SDL_GetOpenGLFunction(glGenerateMipmap);
     } else {
         fprintf(stderr, "Fail to create context %s", SDL_GetError());
     }

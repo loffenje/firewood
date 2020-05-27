@@ -2,7 +2,7 @@
 
 CODE_PATH="$(dirname "$0")"
 
-CommonFlags="-g -std=c++17 -fno-rtti -fno-exceptions"
+CommonFlags="-g -std=c++17 -fno-rtti -fno-exceptions -fdeclspec"
 
 mkdir -p "$CODE_PATH/assets"
 mkdir -p "$CODE_PATH/build"

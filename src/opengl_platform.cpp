@@ -26,7 +26,7 @@ internal GLenum mapElemToShaderType(ShaderDataType type)
 struct OpenGLShader : public Shader
 {
     OpenGLShader() {
-        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+        open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
     ~OpenGLShader() {}
@@ -87,7 +87,7 @@ void OpenGLShader::createProgram(const char *vertex_shader_src, const char *frag
 struct OpenGLVertexBuffer : public VertexBuffer
 {
     OpenGLVertexBuffer() {
-        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+        open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
     ~OpenGLVertexBuffer() {}
@@ -96,7 +96,7 @@ struct OpenGLVertexBuffer : public VertexBuffer
 
     unsigned int vbo;
     OpenGL *open_gl;
-    std::vector<Element> elements;
+    std::vector<Element> elements_data;
 
     u32 getStride() override;
     void create(u32 size) override; 
@@ -104,7 +104,7 @@ struct OpenGLVertexBuffer : public VertexBuffer
     inline void bind() override;
     inline void unbind() override;
     void setData(const void *data, u32 size) override;
-    void setLayout(const std::vector<Element> &elements) override;
+    void setLayout(std::vector<Element> elements) override;
 };
 
 void OpenGLVertexBuffer::setData(const void *data, u32 size)
@@ -113,7 +113,7 @@ void OpenGLVertexBuffer::setData(const void *data, u32 size)
     open_gl->glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
-void OpenGLVertexBuffer::setLayout(const std::vector<Element> &elements)
+void OpenGLVertexBuffer::setLayout(std::vector<Element> elements)
 {
     this->elements = elements;
 }
@@ -158,7 +158,7 @@ inline void OpenGLVertexBuffer::unbind()
 struct OpenGLIndexBuffer : public IndexBuffer
 {
     OpenGLIndexBuffer() {
-        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+        open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
     ~OpenGLIndexBuffer() {}
@@ -194,7 +194,7 @@ inline void OpenGLIndexBuffer::unbind()
 struct OpenGLVertexArray : public VertexArray
 {
     OpenGLVertexArray() {
-        open_gl = reinterpret_cast<OpenGL *>(RendererAPI::instance()->getContext());
+        open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
     OpenGLVertexArray(OpenGL *open_gl): open_gl{open_gl} {}
@@ -237,7 +237,7 @@ void OpenGLVertexArray::addBuffer(std::shared_ptr<VertexBuffer> &buffer)
 
     for (const auto &elem : elements) {
         open_gl->glEnableVertexAttribArray(vertex_buffer_index);
-        open_gl->glVertexAttribPointer(0, elem.getComponentCount(), 
+        open_gl->glVertexAttribPointer(vertex_buffer_index, elem.getComponentCount(), 
                                       mapElemToShaderType(elem.type), elem.normalized ? GL_TRUE : GL_FALSE,
                                       buffer->getStride(),
                                       reinterpret_cast<void *>(elem.offset));

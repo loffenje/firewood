@@ -33,13 +33,14 @@ internal u32 mapShaderTypeToSize(ShaderDataType type)
     return None;
 }
 
-class RendererAPI
+class RendererAPI 
 {
 public:
     static RendererAPI *instance();
     
     virtual void init(SDL_Window *window) = 0;
     virtual void *getContext() = 0; 
+    virtual void clear() = 0;
     virtual ~RendererAPI() {}
 protected:
     RendererAPI() {}
@@ -93,7 +94,7 @@ struct VertexBuffer
     virtual inline void bind() = 0;
     virtual inline void unbind() = 0;
     virtual void setData(const void *data, u32 size) = 0;
-    virtual void setLayout(const std::vector<Element> &elements) = 0;
+    virtual void setLayout(std::vector<Element> elements) = 0;
     virtual u32 getStride() = 0;
 
     virtual ~VertexBuffer() = default;
@@ -137,7 +138,8 @@ struct Shader
 
 struct RendererData
 {
-    Shader *shader;
-    VertexArray *vao;
+    std::shared_ptr<Shader> shader;
+    std::shared_ptr<VertexArray> vao;
+    u32 indices_count;
 };
 #endif
