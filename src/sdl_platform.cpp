@@ -129,15 +129,17 @@ internal void SDLx_CloseGameControllers()
     }
 }
 
-internal void initializeSystems(GameRoot &game_root)
+internal void initializeSystems(GameRoot &game_root, SDLx_State &state)
 {
-    void *resource_memory = mmap(0, GB(1) + MB(16), 
+    void *game_memory_block = mmap(0, GB(1) + MB(16), 
                     PROT_READ | PROT_WRITE,
                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);    
-    assert(resource_memory != MAP_FAILED);
+    assert(game_memory_block != MAP_FAILED);
     
-    auto game_partition = new LinearAllocator(MB(16), memory::add(resource_memory, MB(16)));
-    auto resource_partition = new StackAllocator(GB(1), resource_memory);
+    state.game_memory_block = game_memory_block;
+
+    auto game_partition = new LinearAllocator(MB(16), memory::add(game_memory_block, MB(16)));
+    auto resource_partition = new StackAllocator(GB(1), game_memory_block);
     
     MemoryStorage memory_storage = {};
     memory_storage.resource_partition = resource_partition;
@@ -260,6 +262,9 @@ int main()
     }
 
     f32 game_update_hz = static_cast<f32>(monitor_refresh_hz);
+
+    GameRoot game_root = {};
+    initializeSystems(game_root, state);
 
     GameInput input[2] = {};
     auto new_input = &input[0];
