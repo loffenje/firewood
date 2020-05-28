@@ -33,6 +33,7 @@ typedef int32_t b32;
 #include "math.h"
 #include "utils.h"
 #include "input.h"
+#include "game_memory.cpp"
 
 enum class RendererType
 {
@@ -48,6 +49,19 @@ enum class RendererType
 
 global_var RendererType renderer_type = RendererType::OpenGL_API;
 global_var RendererAPI *renderer_api;
+
+struct MemoryStorage
+{
+    StackAllocator *resource_partition;
+    LinearAllocator *game_partition; 
+};
+
+struct GameRoot
+{
+    MemoryStorage memory_storage;
+    RendererAPI *renderer_api;
+};
+
 
 #include "opengl_platform.cpp"
 

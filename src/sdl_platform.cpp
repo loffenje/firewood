@@ -129,6 +129,27 @@ internal void SDLx_CloseGameControllers()
     }
 }
 
+internal void initializeSystems(GameRoot &game_root)
+{
+    void *resource_memory = mmap(0, GB(1) + MB(16), 
+                    PROT_READ | PROT_WRITE,
+                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);    
+    assert(resource_memory != MAP_FAILED);
+    
+    auto game_partition = new LinearAllocator(MB(16), memory::add(resource_memory, MB(16)));
+    auto resource_partition = new StackAllocator(GB(1), resource_memory);
+    
+    MemoryStorage memory_storage = {};
+    memory_storage.resource_partition = resource_partition;
+    memory_storage.game_partition = game_partition;
+    game_root.memory_storage = memory_storage;
+    game_root.renderer_api = RendererAPI::instance();
+//  game_root.filesystem_api = FileSystemAPI::instance();
+//  game_root.resource_manager = ResourceManager::instance();
+     
+}
+
+
 inline time_t SDLx_GetLastWriteTime(char *filename)
 {
     time_t last_write_time = 0;
