@@ -263,15 +263,11 @@ int main()
 
     f32 game_update_hz = static_cast<f32>(monitor_refresh_hz);
 
-    GameRoot game_root = {};
-    initializeSystems(game_root, state);
 
     GameInput input[2] = {};
     auto new_input = &input[0];
     auto old_input = &input[1];
-   
-    renderer_api = RendererAPI::instance(); 
-    renderer_api->init(window);
+    
     
     SDLx_GameFunctionTable game = {};
     SDLx_LoadedCode game_code = {};
@@ -281,6 +277,10 @@ int main()
     game_code.functions = reinterpret_cast<void **>(&game);
     game_code.loadCode();
     
+    GameRoot game_root = {};
+    initializeSystems(game_root, state);
+    
+    game_root.renderer_api->init(window);
     
     f32 target_seconds_per_frame = 1 / game_update_hz;
     //*********** GAME LOOP *********************//
@@ -300,7 +300,7 @@ int main()
         SDLx_ProcessEvents(state, new_keyboard_controller);
 
         if (game.updateAndRenderer) {
-            game.updateAndRenderer(new_input, renderer_api);
+            game.updateAndRenderer(new_input, game_root);
         }
 
         b32 should_be_reloaded = game_code.isCodeChanged();

@@ -87,7 +87,7 @@ struct VertexBuffer
 {
     std::vector<Element> elements;
     
-    static std::shared_ptr<VertexBuffer> instance();
+    static std::shared_ptr<VertexBuffer> instance(RendererAPI *renderer_api);
 
     virtual void create(u32 size) = 0; 
     virtual void create(f32 *vertices, u32 size) = 0;
@@ -103,7 +103,7 @@ struct VertexBuffer
 
 struct IndexBuffer
 {
-    static std::shared_ptr<IndexBuffer> instance();
+    static std::shared_ptr<IndexBuffer> instance(RendererAPI *renderer_api);
 
     virtual void create(u32 *indices, u32 size) = 0;
     virtual inline void bind() = 0;
@@ -114,7 +114,7 @@ struct IndexBuffer
 
 struct VertexArray
 {
-    static std::shared_ptr<VertexArray> instance();
+    static std::shared_ptr<VertexArray> instance(RendererAPI *renderer_api);
 
     virtual void create() = 0;
     virtual void setIndexBuffer(std::shared_ptr<IndexBuffer> &buffer) = 0;
@@ -128,7 +128,7 @@ struct VertexArray
 
 struct Shader
 {
-    static std::shared_ptr<Shader> instance();
+    static std::shared_ptr<Shader> instance(RendererAPI *renderer_api);
     
     virtual void createProgram(const char *vertex_shader_src, const char *fragment_shader_src) = 0;
     virtual void bind() = 0;

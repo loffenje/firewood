@@ -6,9 +6,8 @@ global_var RendererData renderer_data = {};
 extern "C" UPDATE_AND_RENDER(updateAndRender)
 {
     if (!initialized) {
-        renderer_api = renderer;
         
-        std::shared_ptr<VertexArray> vao = VertexArray::instance();
+        std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
         f32 vertices[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
@@ -17,7 +16,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         };
     
         
-        std::shared_ptr<VertexBuffer> vbo = VertexBuffer::instance();
+        std::shared_ptr<VertexBuffer> vbo = VertexBuffer::instance(game_root.renderer_api);
         vbo->create(vertices, sizeof(vertices));
         std::vector<Element> elems;
         elems  = {
@@ -30,7 +29,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 
         u32 indices[3] = {0,1,2};
       
-        std::shared_ptr<IndexBuffer> ibo = IndexBuffer::instance();
+        std::shared_ptr<IndexBuffer> ibo = IndexBuffer::instance(game_root.renderer_api);
         ibo->create(indices, ARRAY_LEN(indices));
         vao->setIndexBuffer(ibo);
         
@@ -52,7 +51,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
             "color = vColor;\n"
             "}\n\0";
         
-        std::shared_ptr<Shader> shader = Shader::instance();
+        std::shared_ptr<Shader> shader = Shader::instance(game_root.renderer_api);
         shader->createProgram(vertex, fragment);
       
         renderer_data.indices_count = ARRAY_LEN(indices);
@@ -62,7 +61,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         initialized = true;
     }   
     
-    renderer_api->clear();
+    game_root.renderer_api->clear();
     renderer_data.shader->bind();
     renderer_data.vao->bind();
     glDrawElements(GL_TRIANGLES, renderer_data.indices_count, GL_UNSIGNED_INT, nullptr);

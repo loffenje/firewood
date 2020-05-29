@@ -48,7 +48,6 @@ enum class RendererType
 #include "renderer_types.h"
 
 global_var RendererType renderer_type = RendererType::OpenGL_API;
-global_var RendererAPI *renderer_api;
 
 struct MemoryStorage
 {
@@ -68,7 +67,7 @@ struct GameRoot
 
 
 struct RendererCommands;
-#define UPDATE_AND_RENDER(name) int name(GameInput *input, RendererAPI *renderer)
+#define UPDATE_AND_RENDER(name) int name(GameInput *input, GameRoot &game_root)
 
 typedef UPDATE_AND_RENDER(update_and_render);
 
