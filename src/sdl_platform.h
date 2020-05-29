@@ -32,6 +32,7 @@ struct SDLx_State {
     //Functions
     void setEXEPath();
     void buildEXEFileName(const char *name, size_t dest_count, char *dest);
+    void freeMemoryBlock();
 };
 
 void SDLx_State::setEXEPath()
@@ -52,5 +53,10 @@ void SDLx_State::buildEXEFileName(const char *name, size_t dest_count, char *des
             reinterpret_cast<char *>(const_cast<char *>(name)), dest_count, dest);
 }
 
+void SDLx_State::freeMemoryBlock()
+{
+    int result = munmap(game_memory_block, total_size);
+    assert(result != -1);
+}
 
 #endif

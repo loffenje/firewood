@@ -6,9 +6,9 @@ global_var RendererData renderer_data = {};
 extern "C" UPDATE_AND_RENDER(updateAndRender)
 {
     if (!initialized) {
-        
         std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
+
         f32 vertices[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
              0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
@@ -61,7 +61,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         initialized = true;
     }   
     
-    game_root.renderer_api->clear();
+    game_root.renderer_api->clear({0.5f, 0.1f, 0.2f});
     renderer_data.shader->bind();
     renderer_data.vao->bind();
     glDrawElements(GL_TRIANGLES, renderer_data.indices_count, GL_UNSIGNED_INT, nullptr);

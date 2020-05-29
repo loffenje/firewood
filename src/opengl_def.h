@@ -56,6 +56,8 @@ typedef void APIENTRY type_glGenerateMipmap(GLenum target);
 
 
 struct OpenGL {
+    SDL_GLContext gl_context;
+    
     openGLFunction(glTexImage2DMultisample);
     openGLFunction(glBindFramebuffer);
     openGLFunction(glGenFramebuffers);
@@ -109,18 +111,18 @@ struct OpenGL {
 class OpenGLRendererAPI : public RendererAPI
 {
     OpenGL *context;
-    
+
     void *getContext() override;
     void init(SDL_Window *window) override;
     void setAttributes();
     OpenGL *rendererAlloc(size_t size);
-    void clear() override;
+    void clear(v3 color) override;
 };
 
-void OpenGLRendererAPI::clear()
+void OpenGLRendererAPI::clear(v3 color)
 {
-    glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClearColor(color.x, color.y, color.z, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void *OpenGLRendererAPI::getContext() 
@@ -157,9 +159,10 @@ void OpenGLRendererAPI::init(SDL_Window *window)
     context = rendererAlloc(sizeof(OpenGL));
     setAttributes();
     
-    SDL_GLContext sdl_context = SDL_GL_CreateContext(window);
-    if (sdl_context) {
-        SDL_GL_MakeCurrent(window,sdl_context);
+    context->gl_context = SDL_GL_CreateContext(window);
+    
+    if (context->gl_context) {
+        SDL_GL_MakeCurrent(window, context->gl_context);
 #define SDL_GetOpenGLFunction(name) context->name = (type_##name *)SDL_GL_GetProcAddress(#name)
 
         SDL_GetOpenGLFunction(glTexImage2DMultisample);

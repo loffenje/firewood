@@ -40,7 +40,7 @@ public:
     
     virtual void init(SDL_Window *window) = 0;
     virtual void *getContext() = 0; 
-    virtual void clear() = 0;
+    virtual void clear(v3 color) = 0;
     virtual ~RendererAPI() {}
 protected:
     RendererAPI() {}

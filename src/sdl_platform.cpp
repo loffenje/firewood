@@ -131,7 +131,8 @@ internal void SDLx_CloseGameControllers()
 
 internal void initializeSystems(GameRoot &game_root, SDLx_State &state)
 {
-    void *game_memory_block = mmap(0, GB(1) + MB(16), 
+    state.total_size = GB(1) + MB(160);
+    void *game_memory_block = mmap(0, state.total_size, 
                     PROT_READ | PROT_WRITE,
                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);    
     assert(game_memory_block != MAP_FAILED);
@@ -253,6 +254,14 @@ int main()
     //SDL_GLContext context; 
     g_running = true;
     
+    SDLx_GameFunctionTable game = {};
+    SDLx_LoadedCode game_code = {};
+    game_code.dll_fullname_path = src_game_dll_fullpath;
+    game_code.function_count = ARRAY_LEN(SDLx_GameFunctionTableNames);
+    game_code.function_names = SDLx_GameFunctionTableNames;
+    game_code.functions = reinterpret_cast<void **>(&game);
+    game_code.loadCode();
+    
     i32 monitor_refresh_hz = 60;
     i32 display_index = SDL_GetWindowDisplayIndex(window);
     SDL_DisplayMode mode = {};
@@ -269,18 +278,11 @@ int main()
     auto old_input = &input[1];
     
     
-    SDLx_GameFunctionTable game = {};
-    SDLx_LoadedCode game_code = {};
-    game_code.dll_fullname_path = src_game_dll_fullpath;
-    game_code.function_count = ARRAY_LEN(SDLx_GameFunctionTableNames);
-    game_code.function_names = SDLx_GameFunctionTableNames;
-    game_code.functions = reinterpret_cast<void **>(&game);
-    game_code.loadCode();
-    
     GameRoot game_root = {};
     initializeSystems(game_root, state);
-    
     game_root.renderer_api->init(window);
+    
+    
     
     f32 target_seconds_per_frame = 1 / game_update_hz;
     //*********** GAME LOOP *********************//
@@ -311,8 +313,10 @@ int main()
         swapInput(&new_input, &old_input);
         SDL_GL_SwapWindow(window);
     }
-    
-    //SDL_GL_DeleteContext(context);
+   
+    state.freeMemoryBlock();
+    OpenGL *context =  reinterpret_cast<OpenGL *>(game_root.renderer_api->getContext());
+    SDL_GL_DeleteContext(context->gl_context);
     SDLx_CloseGameControllers();
     SDL_Quit();
     return 0;

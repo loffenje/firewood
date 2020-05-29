@@ -221,15 +221,15 @@ void StackAllocator::deallocate(void *ptr)
 */
 
 template <typename T>
-T *alloc(Allocator &allocator)
+T *alloc(Allocator *allocator)
 {
-    return new (allocator.allocate(sizeof(T), alignof(T))) T;
+    return new (allocator->allocate(sizeof(T), alignof(T))) T;
 }
 
 template <typename T>
-void dealloc(Allocator &allocator, T &object)
+void dealloc(Allocator *allocator, T *object)
 {
-    object.~T();
-    allocator.deallocate(&object);
+    object->~T();
+    allocator->deallocate(object);
 }
 
