@@ -18,6 +18,7 @@ typedef double f64;
 
 typedef int32_t b32;
 
+#include <map>
 #include <vector>
 #include <string>
 #include <memory>
@@ -33,6 +34,7 @@ typedef int32_t b32;
 #include "math.h"
 #include "utils.h"
 #include "input.h"
+#include "event.h"
 #include "game_memory.cpp"
 
 enum class RendererType

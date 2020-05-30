@@ -1,4 +1,5 @@
 #include "os_platform.h"
+#include "game.h"
 
 global_var bool initialized = false;
 global_var RendererData renderer_data = {};
@@ -6,6 +7,12 @@ global_var RendererData renderer_data = {};
 extern "C" UPDATE_AND_RENDER(updateAndRender)
 {
     if (!initialized) {
+        TestEntity entity;
+        entity.init();
+
+        std::shared_ptr<EntityDestroyed> destroyed_event(new EntityDestroyed());
+
+        EventDispatcher::instance()->fireEvent(destroyed_event);
         std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
 
