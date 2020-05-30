@@ -15,15 +15,15 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         
         std::shared_ptr<EntityDestroyed> destroyed_event(new EntityDestroyed());
 
-        EventDispatcher::instance()->fireEvent(destroyed_event);
+        EventDispatcher::instance()->queueEvent(destroyed_event);
+        EventDispatcher::instance()->abortEvent(EntityDestroyed::event_type);
+        EventDispatcher::instance()->queueEvent(destroyed_event);
+        EventDispatcher::instance()->broadcast(60000);
+
 
         entity1.destroy();
-        
-        EventDispatcher::instance()->fireEvent(destroyed_event);
-        
         entity2.destroy();
 
-        EventDispatcher::instance()->fireEvent(destroyed_event);
         
         std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
