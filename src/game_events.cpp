@@ -31,8 +31,17 @@ EventDataPtr EntityDestroyed::copy() const
 }
 
 
+internal u32 genEntityID()
+{
+    local_var u32 entity_id = 0;
+
+    return ++entity_id;
+}
+
 struct TestEntity
 {
+    std::string id;
+
     void destroyEventDelegate(EventDataPtr event_data)
     {
         std::shared_ptr<EntityDestroyed> p_event_data = std::static_pointer_cast<EntityDestroyed>(event_data);
@@ -41,18 +50,15 @@ struct TestEntity
 
     void init()
     {
+        id = std::to_string(genEntityID());
         EventDispatcher::instance()->addListener(
-                std::to_string(EntityDestroyed::event_type),
+                id,
                 this, &TestEntity::destroyEventDelegate,
                 EntityDestroyed::event_type);
     }
     
     void destroy()
     {
-        EventDispatcher::instance()->removeListener(
-                    std::to_string(EntityDestroyed::event_type),
-                    this, &TestEntity::destroyEventDelegate,
-                    EntityDestroyed::event_type
-                );
+        EventDispatcher::instance()->removeListener(id, EntityDestroyed::event_type);
     }
 };

@@ -32,26 +32,24 @@ struct EventData
 
 struct BaseEventDelegate
 {
+    BaseEventDelegate(std::string id): id{id} {}
+
     virtual void delegate(EventDataPtr event) = 0; 
     virtual ~BaseEventDelegate() {}
+
+    std::string id;
 };
 
 template <typename E>
 struct EventDelegate : public BaseEventDelegate
 {
     typedef void (E::*fn_ptr)(EventDataPtr);
-    EventDelegate(E *event, fn_ptr func, std::string id): event{event}, func{func}, id{id} {}
+    EventDelegate(E *event, fn_ptr func, std::string id): event{event}, func{func}, BaseEventDelegate{id} {}
 
     void delegate(EventDataPtr event) override;
 
     E *event;
     fn_ptr func;
-    std::string id;
-
-    bool operator==(const EventDelegate<E> &rhs)
-    {
-        return (id.compare(rhs.id) == 0);
-    }
 };
 
 template <typename E>
@@ -72,8 +70,7 @@ struct EventDispatcher
     template <typename E>
     bool addListener(const std::string &id, E *object, void (E::*func)(EventDataPtr), EventType type);
     
-    template <typename E>
-    bool removeListener(const std::string &id, E *object, void (E::*func)(EventDataPtr), EventType type);
+    bool removeListener(const std::string &id, EventType type);
     
     bool fireEvent(const EventDataPtr &event) const;
     bool queueEvent(const EventDataPtr &event);
@@ -102,15 +99,14 @@ bool EventDispatcher::addListener(const std::string &id, E *object, void (E::*fu
     return true;
 }
 
-template <typename E>
-bool EventDispatcher::removeListener(const std::string &id, E *object, void (E::*func)(EventDataPtr), EventType type)
+bool EventDispatcher::removeListener(const std::string &id, EventType type)
 {
     bool result = false;
     if (auto it = event_listeners.find(type); it != event_listeners.end()) {
         EventListenerList &listeners = it->second;
-        EventDelegate event_delegate{object, func, id};
         for (auto it = listeners.begin(); it != listeners.end(); ++it) {
-            if (&event_delegate == (*it)) {
+            //TODO: better way to remove listener ???
+            if (id == (**it).id) {
                 it = listeners.erase(it);
                 result = true;
                 break;

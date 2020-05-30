@@ -7,12 +7,24 @@ global_var RendererData renderer_data = {};
 extern "C" UPDATE_AND_RENDER(updateAndRender)
 {
     if (!initialized) {
-        TestEntity entity;
-        entity.init();
+        TestEntity entity1;
+        entity1.init();
 
+        TestEntity entity2;
+        entity2.init();
+        
         std::shared_ptr<EntityDestroyed> destroyed_event(new EntityDestroyed());
 
         EventDispatcher::instance()->fireEvent(destroyed_event);
+
+        entity1.destroy();
+        
+        EventDispatcher::instance()->fireEvent(destroyed_event);
+        
+        entity2.destroy();
+
+        EventDispatcher::instance()->fireEvent(destroyed_event);
+        
         std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
 
