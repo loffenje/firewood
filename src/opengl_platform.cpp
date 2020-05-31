@@ -28,7 +28,9 @@ struct OpenGLShader : public Shader
         open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
-    ~OpenGLShader() {}
+    ~OpenGLShader() {
+        open_gl->glDeleteProgram(program_id);
+    }
 
     OpenGLShader(OpenGL *open_gl): open_gl{open_gl} {}
       
@@ -89,7 +91,9 @@ struct OpenGLVertexBuffer : public VertexBuffer
         open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
-    ~OpenGLVertexBuffer() {}
+    ~OpenGLVertexBuffer() {
+        open_gl->glDeleteBuffers(1, &vbo);
+    }
 
     OpenGLVertexBuffer(OpenGL *open_gl): open_gl{open_gl} {}
 
@@ -160,7 +164,9 @@ struct OpenGLIndexBuffer : public IndexBuffer
         open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
     }
 
-    ~OpenGLIndexBuffer() {}
+    ~OpenGLIndexBuffer() {
+        open_gl->glDeleteBuffers(1, &ibo);
+    }
 
     OpenGLIndexBuffer(OpenGL *open_gl): open_gl{open_gl} {}
     
@@ -194,6 +200,10 @@ struct OpenGLVertexArray : public VertexArray
 {
     OpenGLVertexArray(RendererAPI *renderer_api) {
         open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
+    }
+    
+    ~OpenGLVertexArray() {
+        open_gl->glDeleteVertexArrays(1, &vao);
     }
 
     OpenGLVertexArray(OpenGL *open_gl): open_gl{open_gl} {}

@@ -34,6 +34,9 @@ typedef void APIENTRY type_glDisableVertexAttribArray(GLuint index);
 typedef GLint APIENTRY type_glGetAttribLocation(GLuint program, const GLchar *name);
 typedef void APIENTRY type_glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
 typedef void APIENTRY type_glVertexAttribIPointer (GLuint index, GLint size, GLenum type, GLsizei stride, const void *pointer);
+
+typedef void APIENTRY type_glDeleteBuffers(GLsizei n, const GLuint *buffers);
+typedef void APIENTRY type_glDeleteVertexArrays(GLsizei n, const GLuint *arrays);
 typedef void APIENTRY type_glBindVertexArray(GLuint array);
 typedef void APIENTRY type_glGenVertexArrays(GLsizei n, GLuint *arrays);
 typedef void APIENTRY type_glBindBuffer (GLenum target, GLuint buffer);
@@ -105,6 +108,8 @@ struct OpenGL {
     openGLFunction(glTexSubImage3D);
     openGLFunction(glDrawElementsBaseVertex);
     openGLFunction(glGenerateMipmap);
+    openGLFunction(glDeleteBuffers);
+    openGLFunction(glDeleteVertexArrays);
 };
 
 
@@ -208,6 +213,9 @@ void OpenGLRendererAPI::init(SDL_Window *window)
         SDL_GetOpenGLFunction(glUniform2fv);
         SDL_GetOpenGLFunction(glUniform3fv);
         SDL_GetOpenGLFunction(glGenerateMipmap);
+        SDL_GetOpenGLFunction(glDeleteBuffers);
+        SDL_GetOpenGLFunction(glDeleteVertexArrays);
+
     } else {
         fprintf(stderr, "Fail to create context %s", SDL_GetError());
     }
