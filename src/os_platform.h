@@ -62,10 +62,13 @@ struct MemoryStorage
     LinearAllocator *game_partition; 
 };
 
+struct GameState;
+
 struct GameRoot
 {
     MemoryStorage memory_storage;
     RendererAPI *renderer_api;
+    GameState *game_state;
 };
 
 

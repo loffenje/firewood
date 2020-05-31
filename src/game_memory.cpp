@@ -88,7 +88,7 @@ ProxyAllocator::ProxyAllocator(Allocator &allocator):
 
 void *ProxyAllocator::allocate(size_t size_in_bytes, u8 alignment)
 {
-    assert(size != 0);
+    assert(size_in_bytes != 0);
     num_allocations++;
     size_t mem = allocator.used_memory;
     void *ptr = allocator.allocate(size_in_bytes, alignment);
@@ -133,7 +133,7 @@ LinearAllocator::~LinearAllocator()
 
 void *LinearAllocator::allocate(size_t size_in_bytes, u8 alignment)
 {
-    assert(size != 0);
+    assert(size_in_bytes != 0);
     u8 adjustment = memory::alignAdjustment(current_address, alignment);
     if (used_memory + adjustment + size_in_bytes > size) return nullptr;
     

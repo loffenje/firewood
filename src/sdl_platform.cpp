@@ -139,6 +139,8 @@ internal void initializeSystems(GameRoot &game_root, SDLx_State &state)
     
     state.game_memory_block = game_memory_block;
 
+    //TODO: allocate these in the some partition instead of new
+
     auto game_partition = new LinearAllocator(MB(16), memory::add(game_memory_block, MB(16)));
     auto resource_partition = new StackAllocator(GB(1), game_memory_block);
     

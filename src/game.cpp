@@ -1,12 +1,17 @@
 #include "os_platform.h"
 #include "game.h"
 
-global_var bool initialized = false;
-global_var RendererData renderer_data = {};
-
 extern "C" UPDATE_AND_RENDER(updateAndRender)
 {
-    if (!initialized) {
+
+    MemoryStorage memory = game_root.memory_storage;
+    
+    if (!game_root.game_state) {
+        game_root.game_state = alloc<GameState>(memory.game_partition);
+    }
+
+    GameState *game_state = game_root.game_state;
+    if (!game_state->renderer_data) {
         TestEntity entity1;
         entity1.init();
 
@@ -72,18 +77,17 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         
         std::shared_ptr<Shader> shader = Shader::instance(game_root.renderer_api);
         shader->createProgram(vertex, fragment);
-      
-        renderer_data.indices_count = ARRAY_LEN(indices);
-        renderer_data.vao = vao;  
-        renderer_data.shader = shader;
-               
-        initialized = true;
+        
+        game_state->renderer_data = alloc<RendererData>(memory.game_partition); 
+        game_state->renderer_data->indices_count = ARRAY_LEN(indices);
+        game_state->renderer_data->vao = vao;  
+        game_state->renderer_data->shader = shader;
     }   
     
     game_root.renderer_api->clear({0.5f, 0.1f, 0.2f});
-    renderer_data.shader->bind();
-    renderer_data.vao->bind();
-    glDrawElements(GL_TRIANGLES, renderer_data.indices_count, GL_UNSIGNED_INT, nullptr);
+    game_state->renderer_data->shader->bind();
+    game_state->renderer_data->vao->bind();
+    glDrawElements(GL_TRIANGLES, game_state->renderer_data->indices_count, GL_UNSIGNED_INT, nullptr);
 
    return 0; 
 }
