@@ -51,7 +51,6 @@ enum class RendererType
 #define GRAPHICS_PLATFORM_API OPEN_GL
 
 
-//TODO: split renderer api
 #include "renderer_types.h"
 
 global_var RendererType renderer_type = RendererType::OpenGL_API;

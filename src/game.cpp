@@ -12,6 +12,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 
     GameState *game_state = game_root.game_state;
     if (!game_state->renderer_data) {
+#if 0
         TestEntity entity1;
         entity1.init();
 
@@ -29,7 +30,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         entity1.destroy();
         entity2.destroy();
 
-        
+#endif   
         std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
         vao->create();
 
@@ -57,17 +58,18 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         ibo->create(indices, ARRAY_LEN(indices));
         vao->setIndexBuffer(ibo);
         
-        const char *vertex = "#version 330 core\n"
+        const char *vertex = "#version 410 core\n"
             "layout(location = 0) in vec3 a_Position;\n"
             "layout(location = 1) in vec4 a_Color;\n"
+            "uniform mat4 u_ViewProjection;\n"
             "out vec4 vColor;\n"
             "void main()\n"
             "{\n"
             "vColor = a_Color;\n"
-            "gl_Position =  vec4(a_Position, 1.0);\n"
+            "gl_Position =  u_ViewProjection * vec4(a_Position, 1.0);\n"
             "}\n\0";
 
-        const char *fragment = "#version 330 core\n"
+        const char *fragment = "#version 410 core\n"
             "layout (location = 0) out vec4 color;\n"
             "in vec4 vColor;\n"
             "void main()\n"
@@ -84,10 +86,14 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         game_state->renderer_data->shader = shader;
     }   
     
-    game_root.renderer_api->clear({0.5f, 0.1f, 0.2f});
+    RendererCommands commands{game_root.renderer_api}; 
+    commands.clear({0.5f, 0.1f, 0.2f});
+
+    beginScene();
+    game_state->renderer_data->shader->uploadUniformMat4("u_ViewProjection", game_state->camera.view_projection_mat);
     game_state->renderer_data->shader->bind();
-    game_state->renderer_data->vao->bind();
-    glDrawElements(GL_TRIANGLES, game_state->renderer_data->indices_count, GL_UNSIGNED_INT, nullptr);
+    submit(commands, game_state->renderer_data->vao);
+    endScene();
 
    return 0; 
 }

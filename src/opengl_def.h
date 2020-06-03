@@ -119,6 +119,7 @@ class OpenGLRendererAPI : public RendererAPI
 
     void *getContext() override;
     void init(SDL_Window *window) override;
+    void drawIndexed(const std::shared_ptr<VertexArray> &vertex_array) override;
     void setAttributes();
     OpenGL *rendererAlloc(size_t size);
     void clear(v3 color) override;
@@ -140,6 +141,11 @@ void *OpenGLRendererAPI::getContext()
     return context;
 }
 
+void OpenGLRendererAPI::drawIndexed(const std::shared_ptr<VertexArray> &vertex_array)
+{
+    glDrawElements(GL_TRIANGLES, vertex_array->index_buffer->getCount(), GL_UNSIGNED_INT, nullptr);
+}
+
 OpenGL *OpenGLRendererAPI::rendererAlloc(size_t size)
 {
     void *memory = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
@@ -150,8 +156,8 @@ OpenGL *OpenGLRendererAPI::rendererAlloc(size_t size)
 
 void OpenGLRendererAPI::setAttributes()
 {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

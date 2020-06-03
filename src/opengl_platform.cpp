@@ -39,11 +39,18 @@ struct OpenGLShader : public Shader
 
     void createProgram(const char *vertex_shader_src, const char *fragment_shader_src) override;
     void bind() override;
+    void unbind() override;
+    void uploadUniformMat4(const char *name, const Mat4x4 &matrix) override;
 };
 
 void OpenGLShader::bind()
 {
     open_gl->glUseProgram(program_id);
+}
+
+void OpenGLShader::unbind()
+{
+    open_gl->glUseProgram(0);
 }
 
 void OpenGLShader::createProgram(const char *vertex_shader_src, const char *fragment_shader_src)
@@ -83,6 +90,12 @@ void OpenGLShader::createProgram(const char *vertex_shader_src, const char *frag
     open_gl->glDeleteShader(fragment_id);
     
     program_id = shader_program;
+}
+
+void OpenGLShader::uploadUniformMat4(const char *name, const Mat4x4 &matrix)
+{
+   GLint location = open_gl->glGetUniformLocation(program_id, name);
+   open_gl->glUniformMatrix4fv(location, 1, GL_FALSE, matrix.n[0]); 
 }
 
 struct OpenGLVertexBuffer : public VertexBuffer
@@ -176,6 +189,7 @@ struct OpenGLIndexBuffer : public IndexBuffer
     void create(u32 *indices, u32 size) override;
     inline void bind() override;
     inline void unbind() override;
+    inline u32 getCount() override;
 };
 
 void OpenGLIndexBuffer::create(u32 *indices, u32 size)
@@ -196,6 +210,12 @@ inline void OpenGLIndexBuffer::unbind()
     open_gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+
+inline u32 OpenGLIndexBuffer::getCount()
+{
+    return count;
+}
+
 struct OpenGLVertexArray : public VertexArray
 {
     OpenGLVertexArray(RendererAPI *renderer_api) {
@@ -212,7 +232,6 @@ struct OpenGLVertexArray : public VertexArray
     u32 vertex_buffer_index;
     u32 vao;
     int component_count;
-    std::shared_ptr<IndexBuffer> index_buffer;
     std::vector<std::shared_ptr<VertexBuffer>> vertex_buffers;
 
     void create() override;

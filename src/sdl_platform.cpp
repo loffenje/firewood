@@ -129,7 +129,14 @@ internal void SDLx_CloseGameControllers()
     }
 }
 
-internal void initializeSystems(GameRoot &game_root, SDLx_State &state)
+internal f32 SDLx_GetSecondsElapsed(u64 start, u64 end)
+{
+    f32 result = static_cast<f32>(end - start) / static_cast<f32>(g_perf_counter);
+
+    return result;
+}
+
+internal void initializeGameSystems(GameRoot &game_root, SDLx_State &state)
 {
     state.total_size = GB(1) + MB(160);
     void *game_memory_block = mmap(0, state.total_size, 
@@ -281,11 +288,11 @@ int main()
     
     
     GameRoot game_root = {};
-    initializeSystems(game_root, state);
+    initializeGameSystems(game_root, state);
     game_root.renderer_api->init(window);
     
     
-    
+    u64 last_counter = SDL_GetPerformanceCounter();
     f32 target_seconds_per_frame = 1 / game_update_hz;
     //*********** GAME LOOP *********************//
     while (g_running) {
@@ -314,6 +321,10 @@ int main()
 
         swapInput(&new_input, &old_input);
         SDL_GL_SwapWindow(window);
+
+        u64 end_counter = SDL_GetPerformanceCounter();
+        fprintf(stdout, "%f elapsed\n", SDLx_GetSecondsElapsed(last_counter, end_counter));
+        last_counter = end_counter;
     }
    
     state.freeMemoryBlock();

@@ -1,6 +1,7 @@
 #ifndef RENDERER_TYPES_H
 #define RENDERER_TYPES_H
 
+struct RendererAPI;
 
 enum ShaderDataType
 {
@@ -33,18 +34,6 @@ internal u32 mapShaderTypeToSize(ShaderDataType type)
     return None;
 }
 
-class RendererAPI 
-{
-public:
-    static RendererAPI *instance();
-    
-    virtual void init(SDL_Window *window) = 0;
-    virtual void *getContext() = 0; 
-    virtual void clear(v3 color) = 0;
-    virtual ~RendererAPI() {}
-protected:
-    RendererAPI() {}
-};
 
 
 struct Element
@@ -108,7 +97,7 @@ struct IndexBuffer
     virtual void create(u32 *indices, u32 size) = 0;
     virtual inline void bind() = 0;
     virtual inline void unbind() = 0;
-    
+    virtual inline u32 getCount() = 0; 
     virtual ~IndexBuffer() = default;
 };
 
@@ -124,16 +113,33 @@ struct VertexArray
     virtual inline void unbind() = 0;
 
     virtual ~VertexArray() = default;
+    
+    std::shared_ptr<IndexBuffer> index_buffer;
 };
 
 struct Shader
 {
     static std::shared_ptr<Shader> instance(RendererAPI *renderer_api);
     
+    virtual void uploadUniformMat4(const char *name, const Mat4x4 &matrix) = 0;
     virtual void createProgram(const char *vertex_shader_src, const char *fragment_shader_src) = 0;
     virtual void bind() = 0;
-    
+    virtual void unbind() = 0;    
     virtual ~Shader() = default;
+};
+
+class RendererAPI 
+{
+public:
+    static RendererAPI *instance();
+    
+    virtual void init(SDL_Window *window) = 0;
+    virtual void *getContext() = 0; 
+    virtual void clear(v3 color) = 0;
+    virtual void drawIndexed(const std::shared_ptr<VertexArray> &vertex_array) = 0;
+    virtual ~RendererAPI() {}
+protected:
+    RendererAPI() {}
 };
 
 struct RendererData

@@ -352,9 +352,9 @@ struct Mat4x4
         n[3][0] = n03; n[3][1] = n13; n[3][2] = n23; n[3][3] = n33;
     }
     
-    f32 &operator()(int i, int j)
+    f32 &operator()(int row, int col)
     {
-        return n[i][j];
+        return n[row][col];
     }
     
     Mat4x4 transpose(const Mat4x4 &m);
@@ -362,12 +362,12 @@ struct Mat4x4
 
 Mat4x4 operator *(const Mat4x4 &m1, const Mat4x4 &m2) {
     Mat4x4 r;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            r.n[i][j] = m1.n[i][0] * m2.n[0][j] +
-                        m1.n[i][1] * m2.n[1][j] +
-                        m1.n[i][2] * m2.n[2][j] +
-                        m1.n[i][3] * m2.n[3][j];
+    for (int row = 0; row < 4; ++row) {
+        for (int col = 0; col < 4; ++col) {
+            r.n[row][col] = m1.n[row][0] * m2.n[0][col] +
+                        m1.n[row][1] * m2.n[1][col] +
+                        m1.n[row][2] * m2.n[2][col] +
+                        m1.n[row][3] * m2.n[3][col];
         }
     }
 
@@ -381,6 +381,19 @@ Mat4x4 transpose(const Mat4x4 &m) {
                     m.n[0][3], m.n[1][3], m.n[2][3], m.n[3][3]);
 }
 
+
+Mat4x4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far)
+{
+    Mat4x4 result;
+    result.n[0][0] = 2.0f / (right - left);
+    result.n[1][1] = 2.0f / (top - bottom);
+    result.n[2][2] = - 2.0f / (far - near);
+    result.n[3][0] = - (right + left) / (right - left);
+    result.n[3][1] = - (top + bottom) / (top - bottom);
+    result.n[3][2] = - (far + near) / (far - near);
+
+    return result;
+}
 
 struct Transform
 {
@@ -490,6 +503,40 @@ Transform rotate(f32 t, const v3 &axis)
     m.n[2][3] = 0;
 
     return Transform(m);
+}
+
+Mat4x4 affineInverse(Transform &t)
+{
+    const v3 &a = reinterpret_cast<const v3 &>(t.matrix.n[0]);
+    const v3 &b = reinterpret_cast<const v3 &>(t.matrix.n[1]);
+    const v3 &c = reinterpret_cast<const v3 &>(t.matrix.n[2]);
+    const v3 &d = reinterpret_cast<const v3 &>(t.matrix.n[3]);
+
+    f32 &x = t.matrix(3,0);
+    f32 &y = t.matrix(3,1);
+    f32 &z = t.matrix(3,2);
+    f32 &w = t.matrix(3,3);
+    
+    v3 s = cross(a,b);
+    v3 k = cross(c,d);
+    v3 u = a*y - b*x;
+    v3 v = c*w - d*z;
+
+    f32 inv_det = 1.0f / dot(s,v) + dot(k,u);
+    s *= inv_det;
+    k *= inv_det;
+    u *= inv_det;
+    v *= inv_det;
+
+    v3 r0 = cross(b, v) + k * y;
+    v3 r1 = cross(v, a) - k * x;
+    v3 r2 = cross(d, u) + s * w;
+    v3 r3 = cross(u, c) - s * z;
+
+    return Mat4x4(r0.x, r0.y, r0.z, -dot(b,k),
+                  r1.x, r1.y, r1.z, dot(a,k),
+                  r2.x, r2.y, r2.z, -dot(d,s),
+                  r3.x, r3.y, r3.z, dot(c, s)); 
 }
 
 v3 operator *(const Transform &t, const v3 &v)
