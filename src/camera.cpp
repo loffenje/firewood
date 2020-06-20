@@ -3,8 +3,9 @@
 
 void Camera::recomputeViewMatrix()
 {
-    Transform transform = translate(pos) * rotate(rot, v3(0,0,1));
-    view_mat = affineInverse(transform); // undoes the last transformation
+    inv_mat = translate(pos).matrix;
+    Transform transform = Transform(inv_mat) * rotate(rot, v3(0,0,1));
+    view_mat = transform.matrix; // undoes the last transformation
     view_projection_mat = projection_mat * view_mat; 
 }
 

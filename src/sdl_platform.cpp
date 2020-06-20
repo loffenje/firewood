@@ -67,7 +67,7 @@ internal void SDLx_ProcessEvents(SDLx_State &state, GameControllerInput *keyboar
                     SDLx_ProcessKeyboardEvent(&keyboard->action_up, is_down);
                 } else if (key_code == SDLK_LEFT) {
                     SDLx_ProcessKeyboardEvent(&keyboard->action_left, is_down);
-                } else if (key_code == SDLK_DOWN) {
+                } else if (key_code == SDLK_DOWN || key_code == SDLK_j) {
                     SDLx_ProcessKeyboardEvent(&keyboard->action_down, is_down);
                 } else if (key_code == SDLK_RIGHT) {
                     SDLx_ProcessKeyboardEvent(&keyboard->action_right, is_down);
@@ -323,7 +323,6 @@ int main()
         SDL_GL_SwapWindow(window);
 
         u64 end_counter = SDL_GetPerformanceCounter();
-        fprintf(stdout, "%f elapsed\n", SDLx_GetSecondsElapsed(last_counter, end_counter));
         last_counter = end_counter;
     }
    

@@ -1,17 +1,21 @@
 #include "renderer.h"
 
-internal void beginScene()
+void Renderer::beginScene(Camera &camera)
+{
+    scene.view_projection_mat = camera.view_projection_mat;
+}
+
+void Renderer::endScene()
 {
 
 }
 
-internal void endScene()
+void Renderer::submit(const std::shared_ptr<VertexArray > &vertex_array, const std::shared_ptr<Shader> &shader, const Mat4x4 &model)
 {
+    shader->bind();
+    shader->uploadUniformMat4("u_ViewProjection", scene.view_projection_mat);
+    shader->uploadUniformMat4("u_Model", model);
 
-}
-
-internal void submit(RendererCommands &commands, const std::shared_ptr<VertexArray > &vertex_array)
-{
     vertex_array->bind();
     commands.drawIndexed(vertex_array);
 }

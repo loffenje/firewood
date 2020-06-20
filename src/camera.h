@@ -14,7 +14,7 @@ struct Camera
     Mat4x4 projection_mat;
     Mat4x4 view_mat;
     Mat4x4 view_projection_mat;
-
+    Mat4x4 inv_mat;
     v3 pos;
     f32 rot = 0.0f;
 };
