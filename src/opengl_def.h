@@ -47,6 +47,10 @@ typedef void APIENTRY type_glDeleteProgram (GLuint program);
 typedef void APIENTRY type_glDeleteShader (GLuint shader);
 typedef void APIENTRY type_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers);
 typedef void APIENTRY type_glDrawBuffers (GLsizei n, const GLenum *bufs);
+typedef void APIENTRY type_glCreateTextures(GLenum target, GLsizei n, GLuint *textures);
+typedef void APIENTRY type_glTexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void APIENTRY type_glTexSubImage2D(GLenum target, GLint level, GLint xoffset,GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void * pixels);
+typedef void APIENTRY type_glBindTextureUnit(GLuint unit, GLuint texture);
 typedef void APIENTRY type_glTexImage3D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels);
 typedef void APIENTRY type_glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels);
 #define GL_DEBUG_CALLBACK(Name) void APIENTRY Name(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam)
@@ -104,6 +108,10 @@ struct OpenGL {
     openGLFunction(glDeleteShader);
     openGLFunction(glDeleteFramebuffers);
     openGLFunction(glDrawBuffers);
+	openGLFunction(glBindTextureUnit);
+	openGLFunction(glCreateTextures);
+	openGLFunction(glTexStorage2D);
+	openGLFunction(glTexSubImage2D);
     openGLFunction(glTexImage3D);
     openGLFunction(glTexSubImage3D);
     openGLFunction(glDrawElementsBaseVertex);
@@ -211,6 +219,10 @@ void OpenGLRendererAPI::init(SDL_Window *window)
         SDL_GetOpenGLFunction(glDeleteShader);
         SDL_GetOpenGLFunction(glDeleteFramebuffers);
         SDL_GetOpenGLFunction(glDrawBuffers);
+		SDL_GetOpenGLFunction(glBindTextureUnit);
+		SDL_GetOpenGLFunction(glCreateTextures);
+		SDL_GetOpenGLFunction(glTexStorage2D);
+		SDL_GetOpenGLFunction(glTexSubImage2D);
         SDL_GetOpenGLFunction(glTexImage3D);
         SDL_GetOpenGLFunction(glTexSubImage3D);
         SDL_GetOpenGLFunction(glDrawElementsBaseVertex);

@@ -122,10 +122,21 @@ struct Shader
     static std::shared_ptr<Shader> instance(RendererAPI *renderer_api);
     
     virtual void uploadUniformMat4(const char *name, const Mat4x4 &matrix) = 0;
-    virtual void createProgram(const char *vertex_shader_src, const char *fragment_shader_src) = 0;
+    virtual void uploadUniformInt(const char *name, i32 integer) = 0;
+	virtual void createProgram(const char *vertex_shader_src, const char *fragment_shader_src) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;    
     virtual ~Shader() = default;
+};
+
+struct Texture
+{
+	static Texture *instance(RendererAPI *renderer_api, const MemoryStorage &memory);
+
+	virtual void create(const char *path) = 0;
+	virtual void getDimension(u32 &width, u32 &height) = 0;
+	virtual void bind() = 0;
+	virtual ~Texture() = default;
 };
 
 class RendererAPI 
@@ -146,6 +157,7 @@ struct RendererData
 {
     std::shared_ptr<Shader> shader;
     std::shared_ptr<VertexArray> vao;
-    u32 indices_count;
+    Texture *texture;
+   	u32 indices_count;
 };
 #endif

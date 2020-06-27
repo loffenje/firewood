@@ -64,19 +64,20 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
        
         std::shared_ptr<VertexArray> square_vao = VertexArray::instance(game_root.renderer_api);
         square_vao->create(); 
-		f32 square_vertices[3 * 4] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f
+		f32 square_vertices[5 * 4] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
         std::shared_ptr<VertexBuffer> square_vbo = VertexBuffer::instance(game_root.renderer_api);
         square_vbo->create(square_vertices, sizeof(square_vertices));
         std::vector<Element> s_elems;
         s_elems  = {
-            {Float3, "a_Position"},
-        };
+			{Float3, "a_Position"},
+			{Float2, "a_TexCoord"}
+		};
         
         square_vbo->setLayout(s_elems);
         square_vao->addBuffer(square_vbo);
@@ -112,35 +113,44 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         
         const char *s_vertex = "#version 410 core\n"
             "layout(location = 0) in vec3 a_Position;\n"
+			"layout(location = 1) in vec2 a_TexCoord;\n"
             "uniform mat4 u_ViewProjection;\n"
             "uniform mat4 u_Model;\n"
-            "out vec3 v_Position;\n"
+			"out vec2 v_TexCoord;\n"
             "void main()\n"
             "{\n"
-            "v_Position = a_Position;\n"
+            "v_TexCoord = a_TexCoord;\n"
             "gl_Position =  u_ViewProjection * u_Model * vec4(a_Position, 1.0);\n"
             "}\n\0";
 
         const char *s_fragment = "#version 410 core\n"
             "layout (location = 0) out vec4 color;\n"
-            "in vec3 v_Position;\n"
+            "in vec2 v_TexCoord;\n"
+			"uniform sampler2D u_Texture;\n"
             "void main()\n"
             "{\n"
-            "color = vec4(0.2, 0.3, 0.8, 1.0);\n"
+            "color = texture(u_Texture, v_TexCoord);\n"
             "}\n\0";
+
 
         std::shared_ptr<Shader> s_shader = Shader::instance(game_root.renderer_api);
         s_shader->createProgram(s_vertex, s_fragment);
-        
-        RendererData *renderer_data = alloc<RendererData>(memory.game_partition); 
+		s_shader->bind();
+		s_shader->uploadUniformInt("u_Texture", 0);
+
+		Texture *s_texture = Texture::instance(game_root.renderer_api, memory);	
+		s_texture->create("./assets/wall.jpg");
+
+		RendererData *renderer_data = alloc<RendererData>(memory.game_partition); 
         renderer_data->indices_count = ARRAY_LEN(indices);
         renderer_data->vao = vao;  
         renderer_data->shader = shader;
-        
+       	 
         RendererData *s_renderer_data = alloc<RendererData>(memory.game_partition); 
         s_renderer_data->indices_count = ARRAY_LEN(square_indices);
         s_renderer_data->vao = square_vao;  
         s_renderer_data->shader = s_shader;
+		s_renderer_data->texture = s_texture;
 
         game_state->renderer_data.push_back(renderer_data);
         game_state->renderer_data.push_back(s_renderer_data);
@@ -191,16 +201,12 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
     renderer->beginScene(game_state->camera);
    
 
-    Transform scale_t = scale(0.1f, 0.1f, 0.1f);
-    for (int y = 0; y < 10; y++)
-    {
-        for (int x = 0; x < 10; x++)
-        {
-            v3 pos = {x * 1.11f, y * 1.11f, 0.0f};
-            Transform t = translate(pos) * scale_t;
-            renderer->submit(square->vao, square->shader, t.matrix);
-        }
-    }
+    Transform scale_t = scale(1.0f, 1.0f, 1.0f);
+	v3 pos = {1.11f, 1.11f, 0.0f};
+	Transform t = translate(pos) * scale_t;
+	
+	square->texture->bind();
+	renderer->submit(square->vao, square->shader, t.matrix);
 
     renderer->submit(triangle->vao, triangle->shader, Mat4x4());
     renderer->endScene();

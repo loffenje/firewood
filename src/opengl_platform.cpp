@@ -41,6 +41,7 @@ struct OpenGLShader : public Shader
     void bind() override;
     void unbind() override;
     void uploadUniformMat4(const char *name, const Mat4x4 &matrix) override;
+	void uploadUniformInt(const char *name, i32 integer) override;
 };
 
 void OpenGLShader::bind()
@@ -98,6 +99,12 @@ void OpenGLShader::uploadUniformMat4(const char *name, const Mat4x4 &matrix)
    open_gl->glUniformMatrix4fv(location, 1, GL_FALSE, matrix.n[0]); 
 }
 
+void OpenGLShader::uploadUniformInt(const char *name, i32 integer)
+{
+	GLint location = open_gl->glGetUniformLocation(program_id, name);
+	open_gl->glUniform1i(location, integer);
+}
+
 struct OpenGLVertexBuffer : public VertexBuffer
 {
     OpenGLVertexBuffer(RendererAPI *renderer_api) {
@@ -111,6 +118,8 @@ struct OpenGLVertexBuffer : public VertexBuffer
     OpenGLVertexBuffer(OpenGL *open_gl): open_gl{open_gl} {}
 
     unsigned int vbo;
+	u32 stride;
+
     OpenGL *open_gl;
     std::vector<Element> elements_data;
 
@@ -121,6 +130,7 @@ struct OpenGLVertexBuffer : public VertexBuffer
     inline void unbind() override;
     void setData(const void *data, u32 size) override;
     void setLayout(std::vector<Element> elements) override;
+	void calcOffsetAndStride();
 };
 
 void OpenGLVertexBuffer::setData(const void *data, u32 size)
@@ -132,19 +142,24 @@ void OpenGLVertexBuffer::setData(const void *data, u32 size)
 void OpenGLVertexBuffer::setLayout(std::vector<Element> elements)
 {
     this->elements = elements;
+
+	calcOffsetAndStride();
 }
 
-u32 OpenGLVertexBuffer::getStride()
+void OpenGLVertexBuffer::calcOffsetAndStride()
 {
     size_t offset = 0;
-    u32 stride = 0;
+    stride = 0;
     for (auto &elem: elements) {
         elem.offset = offset;
         offset += elem.size;
         stride += elem.size;
     }
+}
 
-    return stride;
+u32 OpenGLVertexBuffer::getStride()
+{
+	return stride;
 }
 
 void OpenGLVertexBuffer::create(u32 size)
@@ -216,6 +231,64 @@ inline u32 OpenGLIndexBuffer::getCount()
     return count;
 }
 
+struct OpenGLTexture : public Texture
+{
+    OpenGLTexture(RendererAPI *renderer_api) {
+        open_gl = reinterpret_cast<OpenGL *>(renderer_api->getContext());
+    }
+   
+	OpenGLTexture(OpenGL *open_gl): open_gl{open_gl} {}
+	
+	~OpenGLTexture() {
+		glDeleteTextures(1, &texture);
+	}
+
+	void create(const char *path) override;
+	void getDimension(u32 &width, u32 &height) override;
+   	void bind() override;
+	
+	unsigned int texture;
+
+	OpenGL *open_gl;
+	u32 width;
+	u32 height;
+	const char *path;
+};
+
+void OpenGLTexture::create(const char *path) 
+{
+	i32 img_width;
+	i32 img_height;
+	i32 channels;
+	
+	stbi_set_flip_vertically_on_load(1);
+	stbi_uc *data = stbi_load(path, &img_width, &img_height, &channels, 0);
+	assert(data && "Failed to load image");	
+
+	width = img_width;
+	height = img_height;
+	
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	open_gl->glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
+}
+
+void OpenGLTexture::getDimension(u32 &width, u32 &height)
+{
+	width = this->width;
+	height = this->height;
+}
+
+void OpenGLTexture::bind()
+{
+	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
 struct OpenGLVertexArray : public VertexArray
 {
     OpenGLVertexArray(RendererAPI *renderer_api) {
@@ -268,7 +341,7 @@ void OpenGLVertexArray::addBuffer(std::shared_ptr<VertexBuffer> &buffer)
         open_gl->glVertexAttribPointer(vertex_buffer_index, elem.getComponentCount(), 
                                       mapElemToShaderType(elem.type), elem.normalized ? GL_TRUE : GL_FALSE,
                                       buffer->getStride(),
-                                      reinterpret_cast<void *>(elem.offset));
+                                      reinterpret_cast<const void *>(elem.offset));
         vertex_buffer_index++;   
     }
 
@@ -303,6 +376,16 @@ std::shared_ptr<IndexBuffer> IndexBuffer::instance(RendererAPI *renderer_api)
     }
 
     return nullptr;
+}
+
+Texture *Texture::instance(RendererAPI *renderer_api, const MemoryStorage &memory)
+{
+    switch (renderer_type) {
+        case RendererType::OpenGL_API:
+            return alloc<OpenGLTexture>(memory.resource_partition, renderer_api);
+    }
+
+	return nullptr;
 }
 
 std::shared_ptr<VertexArray> VertexArray::instance(RendererAPI *renderer_api)

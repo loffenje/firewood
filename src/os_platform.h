@@ -36,6 +36,9 @@ using namespace std::chrono;
 #define global_var static
 #define local_var static
 
+#define STB_IMAGE_IMPLEMENTATION
+
+#include "libs/stb_image.h"
 #include "math.h"
 #include "utils.h"
 #include "input.h"
@@ -47,6 +50,12 @@ enum class RendererType
     OpenGL_API
 };
 
+struct MemoryStorage
+{
+    StackAllocator *resource_partition;
+    LinearAllocator *game_partition; 
+};
+
 
 #define GRAPHICS_PLATFORM_API OPEN_GL
 
@@ -54,12 +63,6 @@ enum class RendererType
 #include "renderer_types.h"
 
 global_var RendererType renderer_type = RendererType::OpenGL_API;
-
-struct MemoryStorage
-{
-    StackAllocator *resource_partition;
-    LinearAllocator *game_partition; 
-};
 
 struct GameState;
 
@@ -70,10 +73,7 @@ struct GameRoot
     GameState *game_state;
 };
 
-
 #include "opengl_platform.cpp"
-
-
 
 struct RendererCommands;
 #define UPDATE_AND_RENDER(name) int name(GameInput *input, GameRoot &game_root)

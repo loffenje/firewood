@@ -226,6 +226,12 @@ T *alloc(Allocator *allocator)
     return new (allocator->allocate(sizeof(T), alignof(T))) T;
 }
 
+template <typename T, typename ...Args>
+T *alloc(Allocator *allocator, Args&&... args)
+{
+    return new (allocator->allocate(sizeof(T), alignof(T))) T(args...);
+}
+
 template <typename T>
 void dealloc(Allocator *allocator, T *object)
 {
