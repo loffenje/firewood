@@ -1,5 +1,6 @@
 #include "renderer.h"
 
+
 void Renderer::beginScene(Camera &camera)
 {
     scene.view_projection_mat = camera.view_projection_mat;

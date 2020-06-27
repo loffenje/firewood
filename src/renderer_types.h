@@ -158,6 +158,7 @@ struct RendererData
     std::shared_ptr<Shader> shader;
     std::shared_ptr<VertexArray> vao;
     Texture *texture;
-   	u32 indices_count;
+	Texture *overlay_texture;
+	u32 indices_count;
 };
 #endif

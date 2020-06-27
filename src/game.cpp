@@ -139,7 +139,10 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 		s_shader->uploadUniformInt("u_Texture", 0);
 
 		Texture *s_texture = Texture::instance(game_root.renderer_api, memory);	
-		s_texture->create("./assets/wall.jpg");
+		s_texture->create("./assets/container.png");
+		
+		Texture *overlay_texture = Texture::instance(game_root.renderer_api, memory);
+		overlay_texture->create("./assets/overlay_test.png");
 
 		RendererData *renderer_data = alloc<RendererData>(memory.game_partition); 
         renderer_data->indices_count = ARRAY_LEN(indices);
@@ -151,6 +154,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         s_renderer_data->vao = square_vao;  
         s_renderer_data->shader = s_shader;
 		s_renderer_data->texture = s_texture;
+		s_renderer_data->overlay_texture = overlay_texture;
 
         game_state->renderer_data.push_back(renderer_data);
         game_state->renderer_data.push_back(s_renderer_data);
@@ -206,6 +210,9 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 	Transform t = translate(pos) * scale_t;
 	
 	square->texture->bind();
+	renderer->submit(square->vao, square->shader, t.matrix);
+
+	square->overlay_texture->bind();
 	renderer->submit(square->vao, square->shader, t.matrix);
 
     renderer->submit(triangle->vao, triangle->shader, Mat4x4());

@@ -267,13 +267,20 @@ void OpenGLTexture::create(const char *path)
 
 	width = img_width;
 	height = img_height;
-	
+
+	GLenum data_format = 0;
+	if (channels == 4) {
+		data_format = GL_RGBA;
+	} else if (channels == 3) {
+		data_format = GL_RGB;
+	}
+
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, data_format, width, height, 0, data_format, GL_UNSIGNED_BYTE, data);
 	open_gl->glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data);
 }
