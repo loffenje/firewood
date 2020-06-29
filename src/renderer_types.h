@@ -76,7 +76,7 @@ struct VertexBuffer
 {
     std::vector<Element> elements;
     
-    static std::shared_ptr<VertexBuffer> instance(RendererAPI *renderer_api);
+    static VertexBuffer *instance(RendererAPI *renderer_api, const MemoryStorage &memory);
 
     virtual void create(u32 size) = 0; 
     virtual void create(f32 *vertices, u32 size) = 0;
@@ -92,7 +92,7 @@ struct VertexBuffer
 
 struct IndexBuffer
 {
-    static std::shared_ptr<IndexBuffer> instance(RendererAPI *renderer_api);
+    static IndexBuffer *instance(RendererAPI *renderer_api, const MemoryStorage &memory);
 
     virtual void create(u32 *indices, u32 size) = 0;
     virtual inline void bind() = 0;
@@ -103,23 +103,23 @@ struct IndexBuffer
 
 struct VertexArray
 {
-    static std::shared_ptr<VertexArray> instance(RendererAPI *renderer_api);
+    static VertexArray *instance(RendererAPI *renderer_api, const MemoryStorage &memory);
 
     virtual void create() = 0;
-    virtual void setIndexBuffer(std::shared_ptr<IndexBuffer> &buffer) = 0;
-    virtual void addBuffer(std::shared_ptr<VertexBuffer> &buffer) = 0;
+    virtual void setIndexBuffer(IndexBuffer *buffer) = 0;
+    virtual void addBuffer(VertexBuffer *buffer) = 0;
 
     virtual inline void bind() = 0;
     virtual inline void unbind() = 0;
 
     virtual ~VertexArray() = default;
     
-    std::shared_ptr<IndexBuffer> index_buffer;
+    IndexBuffer *index_buffer;
 };
 
 struct Shader
 {
-    static std::shared_ptr<Shader> instance(RendererAPI *renderer_api);
+    static Shader *instance(RendererAPI *renderer_api, const MemoryStorage &memory);
     
     virtual void uploadUniformMat4(const char *name, const Mat4x4 &matrix) = 0;
     virtual void uploadUniformInt(const char *name, i32 integer) = 0;
@@ -147,7 +147,7 @@ public:
     virtual void init(SDL_Window *window) = 0;
     virtual void *getContext() = 0; 
     virtual void clear(v3 color) = 0;
-    virtual void drawIndexed(const std::shared_ptr<VertexArray> &vertex_array) = 0;
+    virtual void drawIndexed(VertexArray *vertex_array) = 0;
     virtual ~RendererAPI() {}
 protected:
     RendererAPI() {}
@@ -155,8 +155,8 @@ protected:
 
 struct RendererData
 {
-    std::shared_ptr<Shader> shader;
-    std::shared_ptr<VertexArray> vao;
+    Shader *shader;
+    VertexArray *vao;
     Texture *texture;
 	Texture *overlay_texture;
 	u32 indices_count;

@@ -312,11 +312,11 @@ struct OpenGLVertexArray : public VertexArray
     u32 vertex_buffer_index;
     u32 vao;
     int component_count;
-    std::vector<std::shared_ptr<VertexBuffer>> vertex_buffers;
+    std::vector<VertexBuffer *> vertex_buffers;
 
     void create() override;
-    void setIndexBuffer(std::shared_ptr<IndexBuffer> &buffer) override;
-    void addBuffer(std::shared_ptr<VertexBuffer> &buffer) override;
+    void setIndexBuffer(IndexBuffer *buffer) override;
+    void addBuffer(VertexBuffer *buffer) override;
 
     inline void bind() override;
     inline void unbind() override;
@@ -327,7 +327,7 @@ void OpenGLVertexArray::create()
     open_gl->glGenVertexArrays(1, &vao);
 }
 
-void OpenGLVertexArray::setIndexBuffer(std::shared_ptr<IndexBuffer> &buffer)
+void OpenGLVertexArray::setIndexBuffer(IndexBuffer *buffer)
 {
     open_gl->glBindVertexArray(vao);
     buffer->bind();
@@ -335,7 +335,7 @@ void OpenGLVertexArray::setIndexBuffer(std::shared_ptr<IndexBuffer> &buffer)
     index_buffer = buffer;
 }
 
-void OpenGLVertexArray::addBuffer(std::shared_ptr<VertexBuffer> &buffer)
+void OpenGLVertexArray::addBuffer(VertexBuffer *buffer)
 {
     open_gl->glBindVertexArray(vao);
     buffer->bind();
@@ -365,21 +365,21 @@ inline void OpenGLVertexArray::unbind()
     open_gl->glBindVertexArray(0);
 }
 
-std::shared_ptr<VertexBuffer> VertexBuffer::instance(RendererAPI *renderer_api)
+VertexBuffer *VertexBuffer::instance(RendererAPI *renderer_api, const MemoryStorage &memory)
 {
     switch (renderer_type) {
         case RendererType::OpenGL_API:
-            return std::make_shared<OpenGLVertexBuffer>(renderer_api);
+            return alloc<OpenGLVertexBuffer>(memory.resource_partition, renderer_api);
     }
 
     return nullptr;
 }
 
-std::shared_ptr<IndexBuffer> IndexBuffer::instance(RendererAPI *renderer_api)
+IndexBuffer *IndexBuffer::instance(RendererAPI *renderer_api, const MemoryStorage &memory)
 {
     switch (renderer_type) {
         case RendererType::OpenGL_API:
-            return std::make_shared<OpenGLIndexBuffer>(renderer_api);
+            return alloc<OpenGLIndexBuffer>(memory.resource_partition, renderer_api);
     }
 
     return nullptr;
@@ -395,21 +395,21 @@ Texture *Texture::instance(RendererAPI *renderer_api, const MemoryStorage &memor
 	return nullptr;
 }
 
-std::shared_ptr<VertexArray> VertexArray::instance(RendererAPI *renderer_api)
+VertexArray *VertexArray::instance(RendererAPI *renderer_api, const MemoryStorage &memory)
 {
     switch (renderer_type) {
         case RendererType::OpenGL_API:
-            return std::make_shared<OpenGLVertexArray>(renderer_api);
+            return alloc<OpenGLVertexArray>(memory.resource_partition, renderer_api);
     }
 
     return nullptr;
 }
 
-std::shared_ptr<Shader> Shader::instance(RendererAPI *renderer_api)
+Shader *Shader::instance(RendererAPI *renderer_api, const MemoryStorage &memory)
 {
     switch (renderer_type) {
         case RendererType::OpenGL_API:
-            return std::make_shared<OpenGLShader>(renderer_api);
+            return alloc<OpenGLShader>(memory.resource_partition, renderer_api);
     }
 
     return nullptr;

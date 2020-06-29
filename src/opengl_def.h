@@ -127,7 +127,7 @@ class OpenGLRendererAPI : public RendererAPI
 
     void *getContext() override;
     void init(SDL_Window *window) override;
-    void drawIndexed(const std::shared_ptr<VertexArray> &vertex_array) override;
+    void drawIndexed(VertexArray *vertex_array) override;
     void setAttributes();
     OpenGL *rendererAlloc(size_t size);
     void clear(v3 color) override;
@@ -149,7 +149,7 @@ void *OpenGLRendererAPI::getContext()
     return context;
 }
 
-void OpenGLRendererAPI::drawIndexed(const std::shared_ptr<VertexArray> &vertex_array)
+void OpenGLRendererAPI::drawIndexed(VertexArray *vertex_array)
 {
     glDrawElements(GL_TRIANGLES, vertex_array->index_buffer->getCount(), GL_UNSIGNED_INT, nullptr);
 }

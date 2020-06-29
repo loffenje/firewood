@@ -35,7 +35,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         entity2.destroy();
 
 #endif   
-        std::shared_ptr<VertexArray> vao = VertexArray::instance(game_root.renderer_api);
+        VertexArray *vao = VertexArray::instance(game_root.renderer_api, memory);
         vao->create();
 
         f32 vertices[3 * 7] = {
@@ -45,7 +45,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
         };
     
         
-        std::shared_ptr<VertexBuffer> vbo = VertexBuffer::instance(game_root.renderer_api);
+        VertexBuffer *vbo = VertexBuffer::instance(game_root.renderer_api, memory);
         vbo->create(vertices, sizeof(vertices));
         std::vector<Element> elems;
         elems  = {
@@ -58,11 +58,11 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 
         u32 indices[3] = {0,1,2};
       
-        std::shared_ptr<IndexBuffer> ibo = IndexBuffer::instance(game_root.renderer_api);
+        IndexBuffer *ibo = IndexBuffer::instance(game_root.renderer_api, memory);
         ibo->create(indices, ARRAY_LEN(indices));
         vao->setIndexBuffer(ibo);
        
-        std::shared_ptr<VertexArray> square_vao = VertexArray::instance(game_root.renderer_api);
+        VertexArray *square_vao = VertexArray::instance(game_root.renderer_api, memory);
         square_vao->create(); 
 		f32 square_vertices[5 * 4] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -71,7 +71,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-        std::shared_ptr<VertexBuffer> square_vbo = VertexBuffer::instance(game_root.renderer_api);
+        VertexBuffer *square_vbo = VertexBuffer::instance(game_root.renderer_api, memory);
         square_vbo->create(square_vertices, sizeof(square_vertices));
         std::vector<Element> s_elems;
         s_elems  = {
@@ -84,7 +84,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
 
 
         u32 square_indices[6] = {0,1,2,2,3,0};
-        std::shared_ptr<IndexBuffer> square_ibo = IndexBuffer::instance(game_root.renderer_api);
+        IndexBuffer *square_ibo = IndexBuffer::instance(game_root.renderer_api, memory);
         square_ibo->create(square_indices, ARRAY_LEN(square_indices));
         square_vao->setIndexBuffer(square_ibo);
 
@@ -108,7 +108,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
             "color = vColor;\n"
             "}\n\0";
         
-        std::shared_ptr<Shader> shader = Shader::instance(game_root.renderer_api);
+        Shader *shader = Shader::instance(game_root.renderer_api, memory);
         shader->createProgram(vertex, fragment);
         
         const char *s_vertex = "#version 410 core\n"
@@ -133,7 +133,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender)
             "}\n\0";
 
 
-        std::shared_ptr<Shader> s_shader = Shader::instance(game_root.renderer_api);
+        Shader *s_shader = Shader::instance(game_root.renderer_api, memory);
         s_shader->createProgram(s_vertex, s_fragment);
 		s_shader->bind();
 		s_shader->uploadUniformInt("u_Texture", 0);
