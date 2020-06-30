@@ -38,12 +38,12 @@ using namespace std::chrono;
 
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "event.h"
-#include "game_memory.cpp"
-#include "input.h"
 #include "libs/stb_image.h"
 #include "math.h"
 #include "utils.h"
+#include "input.h"
+#include "event.h"
+#include "game_memory.cpp"
 
 enum class RendererType { OpenGL_API };
 

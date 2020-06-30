@@ -1,4 +1,3 @@
-#include "sdl_platform.h"
 
 #include <assert.h>
 #include <dlfcn.h>
@@ -6,6 +5,7 @@
 #include <sys/stat.h>
 
 #include "os_platform.h"
+#include "sdl_platform.h"
 
 // Platform Layer
 #ifndef MAP_ANONYMOUS

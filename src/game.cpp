@@ -1,6 +1,6 @@
+#include "os_platform.h"
 #include "game.h"
 
-#include "os_platform.h"
 
 global_var v3 camera_pos;
 global_var f32 camera_rot = 0.0f;
@@ -16,22 +16,22 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
     if (game_state->renderer_data.empty()) {
 	game_state->renderer_data.reserve(2);  // TODO: test code, remove
 #if 0
-		TestEntity entity1;
-		entity1.init();
+        TestEntity entity1;
+        entity1.init();
 
-		TestEntity entity2;
-		entity2.init();
-		
-		std::shared_ptr<EntityDestroyed> destroyed_event(new EntityDestroyed());
+        TestEntity entity2;
+        entity2.init();
+        
+        std::shared_ptr<EntityDestroyed> destroyed_event(new EntityDestroyed());
 
-		EventDispatcher::instance()->queueEvent(destroyed_event);
-		EventDispatcher::instance()->abortEvent(EntityDestroyed::event_type);
-		EventDispatcher::instance()->queueEvent(destroyed_event);
-		EventDispatcher::instance()->broadcast(60000);
+        EventDispatcher::instance()->queueEvent(destroyed_event);
+        EventDispatcher::instance()->abortEvent(EntityDestroyed::event_type);
+        EventDispatcher::instance()->queueEvent(destroyed_event);
+        EventDispatcher::instance()->broadcast(60000);
 
 
-		entity1.destroy();
-		entity2.destroy();
+        entity1.destroy();
+        entity2.destroy();
 
 #endif
 	VertexArray *vao =
@@ -90,7 +90,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
 	    "void main()\n"
 	    "{\n"
 	    "vColor = a_Color;\n"
-	    "gl_Position =	u_ViewProjection * u_Model *  vec4(a_Position, "
+	    "gl_Position =  u_ViewProjection * u_Model *  vec4(a_Position, "
 	    "1.0);\n"
 	    "}\n\0";
 
@@ -116,7 +116,7 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
 	    "void main()\n"
 	    "{\n"
 	    "v_TexCoord = a_TexCoord;\n"
-	    "gl_Position =	u_ViewProjection * u_Model * vec4(a_Position, "
+	    "gl_Position =  u_ViewProjection * u_Model * vec4(a_Position, "
 	    "1.0);\n"
 	    "}\n\0";
 

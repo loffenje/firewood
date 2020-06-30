@@ -1,5 +1,5 @@
-#include "camera.cpp"
 #include "game_events.cpp"
+#include "camera.cpp"
 #include "renderer.cpp"
 
 struct GameState {
