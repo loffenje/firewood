@@ -23,6 +23,7 @@ global_var SDL_GameController *controller_handles[MAX_CONTROLLERS];
 global_var SDL_Haptic *rumble_handles[MAX_CONTROLLERS];
 global_var u64 g_perf_counter;
 global_var bool g_running;
+global_var v2i g_aspect_ratio = {16, 9};
 
 internal void SDLx_ProcessKeyboardEvent(GameButtonState *new_state,
 					b32 is_down) {
@@ -46,7 +47,34 @@ internal void SDLx_ProcessEvents(SDLx_State &state,
 	    case SDL_QUIT:
 		g_running = false;
 		break;
-	    case SDL_KEYDOWN:
+
+        case SDL_WINDOWEVENT: {
+          switch (event.window.event) {
+          case SDL_WINDOWEVENT_RESIZED: {
+
+            v2i new_dim = {event.window.data1, event.window.data2};
+
+            i32 render_width = g_aspect_ratio.x;
+            i32 render_height = g_aspect_ratio.y;
+
+            if (render_width > 0 && render_height > 0) {
+              i32 new_width = (render_width * new_dim.y) / render_height;
+              i32 new_height = (render_height * new_dim.x) / render_width;
+
+              if (abs(static_cast<f32>(new_dim.x - new_width)) <
+                  abs(static_cast<f32>(new_dim.y - new_height))) {
+                new_dim.x = new_width;
+              } else {
+                new_dim.y = new_height;
+              }
+
+              SDL_Window *window = SDL_GetWindowFromID(event.window.windowID);
+              SDL_SetWindowSize(window, new_dim.x, new_dim.y);
+            }
+          }
+          }
+        }
+        case SDL_KEYDOWN:
 	    case SDL_KEYUP: {
 		SDL_Keycode key_code = event.key.keysym.sym;
 		bool was_down = (event.key.state == SDL_RELEASED);
