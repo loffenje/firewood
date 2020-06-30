@@ -63,185 +63,185 @@ typedef void APIENTRY type_glGenerateMipmap(GLenum target);
 
 
 struct OpenGL {
-    SDL_GLContext gl_context;
-    
-    openGLFunction(glTexImage2DMultisample);
-    openGLFunction(glBindFramebuffer);
-    openGLFunction(glGenFramebuffers);
-    openGLFunction(glFramebufferTexture2D);
-    openGLFunction(glCheckFramebufferStatus);
-    openGLFunction(glBlitFramebuffer);
-    openGLFunction(glAttachShader);
-    openGLFunction(glCompileShader);
-    openGLFunction(glCreateProgram);
-    openGLFunction(glCreateShader);
-    openGLFunction(glLinkProgram);
-    openGLFunction(glShaderSource);
-    openGLFunction(glUseProgram);
-    openGLFunction(glGetProgramInfoLog);
-    openGLFunction(glGetShaderInfoLog);
-    openGLFunction(glValidateProgram);
-    openGLFunction(glGetProgramiv);
-    openGLFunction(glGetUniformLocation);
-    openGLFunction(glUniform4fv);
-    openGLFunction(glUniformMatrix4fv);
-    openGLFunction(glUniform1i);
-    openGLFunction(glUniform1f);
-    openGLFunction(glUniform4f);
-    openGLFunction(glUniform2fv);
-    openGLFunction(glUniform3fv);
-    openGLFunction(glEnableVertexAttribArray);
-    openGLFunction(glDisableVertexAttribArray);
-    openGLFunction(glGetAttribLocation);
-    openGLFunction(glVertexAttribPointer);
-    openGLFunction(glVertexAttribIPointer);
-    openGLFunction(glDebugMessageCallbackARB);
-    openGLFunction(glBindVertexArray);
-    openGLFunction(glGenVertexArrays);
-    openGLFunction(glBindBuffer);
-    openGLFunction(glGenBuffers);
-    openGLFunction(glBufferData);
-    openGLFunction(glBufferSubData);
-    openGLFunction(glActiveTexture);
-    openGLFunction(glGetStringi);
-    openGLFunction(glDeleteProgram);
-    openGLFunction(glDeleteShader);
-    openGLFunction(glDeleteFramebuffers);
-    openGLFunction(glDrawBuffers);
+	SDL_GLContext gl_context;
+	
+	openGLFunction(glTexImage2DMultisample);
+	openGLFunction(glBindFramebuffer);
+	openGLFunction(glGenFramebuffers);
+	openGLFunction(glFramebufferTexture2D);
+	openGLFunction(glCheckFramebufferStatus);
+	openGLFunction(glBlitFramebuffer);
+	openGLFunction(glAttachShader);
+	openGLFunction(glCompileShader);
+	openGLFunction(glCreateProgram);
+	openGLFunction(glCreateShader);
+	openGLFunction(glLinkProgram);
+	openGLFunction(glShaderSource);
+	openGLFunction(glUseProgram);
+	openGLFunction(glGetProgramInfoLog);
+	openGLFunction(glGetShaderInfoLog);
+	openGLFunction(glValidateProgram);
+	openGLFunction(glGetProgramiv);
+	openGLFunction(glGetUniformLocation);
+	openGLFunction(glUniform4fv);
+	openGLFunction(glUniformMatrix4fv);
+	openGLFunction(glUniform1i);
+	openGLFunction(glUniform1f);
+	openGLFunction(glUniform4f);
+	openGLFunction(glUniform2fv);
+	openGLFunction(glUniform3fv);
+	openGLFunction(glEnableVertexAttribArray);
+	openGLFunction(glDisableVertexAttribArray);
+	openGLFunction(glGetAttribLocation);
+	openGLFunction(glVertexAttribPointer);
+	openGLFunction(glVertexAttribIPointer);
+	openGLFunction(glDebugMessageCallbackARB);
+	openGLFunction(glBindVertexArray);
+	openGLFunction(glGenVertexArrays);
+	openGLFunction(glBindBuffer);
+	openGLFunction(glGenBuffers);
+	openGLFunction(glBufferData);
+	openGLFunction(glBufferSubData);
+	openGLFunction(glActiveTexture);
+	openGLFunction(glGetStringi);
+	openGLFunction(glDeleteProgram);
+	openGLFunction(glDeleteShader);
+	openGLFunction(glDeleteFramebuffers);
+	openGLFunction(glDrawBuffers);
 	openGLFunction(glBindTextureUnit);
 	openGLFunction(glCreateTextures);
 	openGLFunction(glTexStorage2D);
 	openGLFunction(glTexSubImage2D);
-    openGLFunction(glTexImage3D);
-    openGLFunction(glTexSubImage3D);
-    openGLFunction(glDrawElementsBaseVertex);
-    openGLFunction(glGenerateMipmap);
-    openGLFunction(glDeleteBuffers);
-    openGLFunction(glDeleteVertexArrays);
+	openGLFunction(glTexImage3D);
+	openGLFunction(glTexSubImage3D);
+	openGLFunction(glDrawElementsBaseVertex);
+	openGLFunction(glGenerateMipmap);
+	openGLFunction(glDeleteBuffers);
+	openGLFunction(glDeleteVertexArrays);
 };
 
 
 class OpenGLRendererAPI : public RendererAPI
 {
-    OpenGL *context;
+	OpenGL *context;
 
-    void *getContext() override;
-    void init(SDL_Window *window) override;
-    void drawIndexed(VertexArray *vertex_array) override;
-    void setAttributes();
-    OpenGL *rendererAlloc(size_t size);
-    void clear(v3 color) override;
+	void *getContext() override;
+	void init(SDL_Window *window) override;
+	void drawIndexed(VertexArray *vertex_array) override;
+	void setAttributes();
+	OpenGL *rendererAlloc(size_t size);
+	void clear(v3 color) override;
 };
 
 void OpenGLRendererAPI::clear(v3 color)
 {
-    glClearColor(color.x, color.y, color.z, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(color.x, color.y, color.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void *OpenGLRendererAPI::getContext() 
 {
-    if (!context) {
-        std::cerr << "Initialize renderer first!\n";
-        exit(1);
-    }
+	if (!context) {
+		std::cerr << "Initialize renderer first!\n";
+		exit(1);
+	}
 
-    return context;
+	return context;
 }
 
 void OpenGLRendererAPI::drawIndexed(VertexArray *vertex_array)
 {
-    glDrawElements(GL_TRIANGLES, vertex_array->index_buffer->getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, vertex_array->index_buffer->getCount(), GL_UNSIGNED_INT, nullptr);
 }
 
 OpenGL *OpenGLRendererAPI::rendererAlloc(size_t size)
 {
-    void *memory = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-    OpenGL *result = reinterpret_cast<OpenGL *>(memory != MAP_FAILED ? memory : 0);
-    
-    return result;
+	void *memory = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+	OpenGL *result = reinterpret_cast<OpenGL *>(memory != MAP_FAILED ? memory : 0);
+	
+	return result;
 }
 
 void OpenGLRendererAPI::setAttributes()
 {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 }
 
 void OpenGLRendererAPI::init(SDL_Window *window)
 {
-    context = rendererAlloc(sizeof(OpenGL));
-    setAttributes();
-    
-    context->gl_context = SDL_GL_CreateContext(window);
-    
-    if (context->gl_context) {
-        SDL_GL_MakeCurrent(window, context->gl_context);
+	context = rendererAlloc(sizeof(OpenGL));
+	setAttributes();
+	
+	context->gl_context = SDL_GL_CreateContext(window);
+	
+	if (context->gl_context) {
+		SDL_GL_MakeCurrent(window, context->gl_context);
 #define SDL_GetOpenGLFunction(name) context->name = (type_##name *)SDL_GL_GetProcAddress(#name)
 
-        SDL_GetOpenGLFunction(glTexImage2DMultisample);
-        SDL_GetOpenGLFunction(glBlitFramebuffer);
-        SDL_GetOpenGLFunction(glAttachShader);
-        SDL_GetOpenGLFunction(glCompileShader);
-        SDL_GetOpenGLFunction(glCreateProgram);
-        SDL_GetOpenGLFunction(glCreateShader);
-        SDL_GetOpenGLFunction(glLinkProgram);
-        SDL_GetOpenGLFunction(glShaderSource);
-        SDL_GetOpenGLFunction(glUseProgram);
-        SDL_GetOpenGLFunction(glGetProgramInfoLog);
-        SDL_GetOpenGLFunction(glGetShaderInfoLog);
-        SDL_GetOpenGLFunction(glValidateProgram);
-        SDL_GetOpenGLFunction(glGetProgramiv);
-        SDL_GetOpenGLFunction(glGetUniformLocation);
-        SDL_GetOpenGLFunction(glUniform4fv);
-        SDL_GetOpenGLFunction(glUniformMatrix4fv);
-        SDL_GetOpenGLFunction(glUniform1i);
-        SDL_GetOpenGLFunction(glBufferSubData);
-        SDL_GetOpenGLFunction(glEnableVertexAttribArray);
-        SDL_GetOpenGLFunction(glDisableVertexAttribArray);
-        SDL_GetOpenGLFunction(glGetAttribLocation);
-        SDL_GetOpenGLFunction(glVertexAttribPointer);
-        SDL_GetOpenGLFunction(glVertexAttribIPointer);
-        SDL_GetOpenGLFunction(glDebugMessageCallbackARB);
-        SDL_GetOpenGLFunction(glBindVertexArray);
-        SDL_GetOpenGLFunction(glGenVertexArrays);
-        SDL_GetOpenGLFunction(glBindBuffer);
-        SDL_GetOpenGLFunction(glGenBuffers);
-        SDL_GetOpenGLFunction(glBufferData);
-        SDL_GetOpenGLFunction(glActiveTexture);
-        SDL_GetOpenGLFunction(glGetStringi);
-        SDL_GetOpenGLFunction(glDeleteProgram);
-        SDL_GetOpenGLFunction(glDeleteShader);
-        SDL_GetOpenGLFunction(glDeleteFramebuffers);
-        SDL_GetOpenGLFunction(glDrawBuffers);
+		SDL_GetOpenGLFunction(glTexImage2DMultisample);
+		SDL_GetOpenGLFunction(glBlitFramebuffer);
+		SDL_GetOpenGLFunction(glAttachShader);
+		SDL_GetOpenGLFunction(glCompileShader);
+		SDL_GetOpenGLFunction(glCreateProgram);
+		SDL_GetOpenGLFunction(glCreateShader);
+		SDL_GetOpenGLFunction(glLinkProgram);
+		SDL_GetOpenGLFunction(glShaderSource);
+		SDL_GetOpenGLFunction(glUseProgram);
+		SDL_GetOpenGLFunction(glGetProgramInfoLog);
+		SDL_GetOpenGLFunction(glGetShaderInfoLog);
+		SDL_GetOpenGLFunction(glValidateProgram);
+		SDL_GetOpenGLFunction(glGetProgramiv);
+		SDL_GetOpenGLFunction(glGetUniformLocation);
+		SDL_GetOpenGLFunction(glUniform4fv);
+		SDL_GetOpenGLFunction(glUniformMatrix4fv);
+		SDL_GetOpenGLFunction(glUniform1i);
+		SDL_GetOpenGLFunction(glBufferSubData);
+		SDL_GetOpenGLFunction(glEnableVertexAttribArray);
+		SDL_GetOpenGLFunction(glDisableVertexAttribArray);
+		SDL_GetOpenGLFunction(glGetAttribLocation);
+		SDL_GetOpenGLFunction(glVertexAttribPointer);
+		SDL_GetOpenGLFunction(glVertexAttribIPointer);
+		SDL_GetOpenGLFunction(glDebugMessageCallbackARB);
+		SDL_GetOpenGLFunction(glBindVertexArray);
+		SDL_GetOpenGLFunction(glGenVertexArrays);
+		SDL_GetOpenGLFunction(glBindBuffer);
+		SDL_GetOpenGLFunction(glGenBuffers);
+		SDL_GetOpenGLFunction(glBufferData);
+		SDL_GetOpenGLFunction(glActiveTexture);
+		SDL_GetOpenGLFunction(glGetStringi);
+		SDL_GetOpenGLFunction(glDeleteProgram);
+		SDL_GetOpenGLFunction(glDeleteShader);
+		SDL_GetOpenGLFunction(glDeleteFramebuffers);
+		SDL_GetOpenGLFunction(glDrawBuffers);
 		SDL_GetOpenGLFunction(glBindTextureUnit);
 		SDL_GetOpenGLFunction(glCreateTextures);
 		SDL_GetOpenGLFunction(glTexStorage2D);
 		SDL_GetOpenGLFunction(glTexSubImage2D);
-        SDL_GetOpenGLFunction(glTexImage3D);
-        SDL_GetOpenGLFunction(glTexSubImage3D);
-        SDL_GetOpenGLFunction(glDrawElementsBaseVertex);
-        SDL_GetOpenGLFunction(glUniform1f);
-        SDL_GetOpenGLFunction(glUniform4f);
-        SDL_GetOpenGLFunction(glUniform2fv);
-        SDL_GetOpenGLFunction(glUniform3fv);
-        SDL_GetOpenGLFunction(glGenerateMipmap);
-        SDL_GetOpenGLFunction(glDeleteBuffers);
-        SDL_GetOpenGLFunction(glDeleteVertexArrays);
+		SDL_GetOpenGLFunction(glTexImage3D);
+		SDL_GetOpenGLFunction(glTexSubImage3D);
+		SDL_GetOpenGLFunction(glDrawElementsBaseVertex);
+		SDL_GetOpenGLFunction(glUniform1f);
+		SDL_GetOpenGLFunction(glUniform4f);
+		SDL_GetOpenGLFunction(glUniform2fv);
+		SDL_GetOpenGLFunction(glUniform3fv);
+		SDL_GetOpenGLFunction(glGenerateMipmap);
+		SDL_GetOpenGLFunction(glDeleteBuffers);
+		SDL_GetOpenGLFunction(glDeleteVertexArrays);
 
-    } else {
-        fprintf(stderr, "Fail to create context %s", SDL_GetError());
-    }
+	} else {
+		fprintf(stderr, "Fail to create context %s", SDL_GetError());
+	}
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    SDL_GL_SetSwapInterval(1); 
+	SDL_GL_SetSwapInterval(1); 
 }
 
 #endif

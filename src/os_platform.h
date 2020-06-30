@@ -8,7 +8,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-typedef int8_t  i8;
+typedef int8_t	i8;
 typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
@@ -47,13 +47,13 @@ using namespace std::chrono;
 
 enum class RendererType
 {
-    OpenGL_API
+	OpenGL_API
 };
 
 struct MemoryStorage
 {
-    StackAllocator *resource_partition;
-    LinearAllocator *game_partition; 
+	StackAllocator *resource_partition;
+	LinearAllocator *game_partition; 
 };
 
 
@@ -68,9 +68,9 @@ struct GameState;
 
 struct GameRoot
 {
-    MemoryStorage memory_storage;
-    RendererAPI *renderer_api;
-    GameState *game_state;
+	MemoryStorage memory_storage;
+	RendererAPI *renderer_api;
+	GameState *game_state;
 };
 
 #include "opengl_platform.cpp"
@@ -81,11 +81,11 @@ struct RendererCommands;
 typedef UPDATE_AND_RENDER(update_and_render);
 
 struct SDLx_GameFunctionTable {
-    update_and_render *updateAndRenderer;
+	update_and_render *updateAndRenderer;
 };
 
 global_var const char *SDLx_GameFunctionTableNames[] = {
-    "updateAndRender"
+	"updateAndRender"
 };
 
 #endif

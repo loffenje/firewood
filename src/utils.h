@@ -14,25 +14,25 @@
 
 internal void zeroSize(size_t size, void *ptr)
 {
-    u8 *byte = (u8 *)ptr;
-    while(size--)
-    {
-        *byte++ = 0;
-    }
+	u8 *byte = (u8 *)ptr;
+	while(size--)
+	{
+		*byte++ = 0;
+	}
 }
 
 void concatStr(size_t src_x_cnt, char *src_x,
-                size_t src_y_cnt, char *src_y,
-                size_t dest_cnt, char *dest) {
-    for (int i = 0; i < src_x_cnt; ++i) {
-        *dest++ = *src_x++;
-    }
+				size_t src_y_cnt, char *src_y,
+				size_t dest_cnt, char *dest) {
+	for (int i = 0; i < src_x_cnt; ++i) {
+		*dest++ = *src_x++;
+	}
 
-    for (int i = 0; i < src_y_cnt; ++i) {
-        *dest++ = *src_y++;
-    }
+	for (int i = 0; i < src_y_cnt; ++i) {
+		*dest++ = *src_y++;
+	}
 
-    *dest++ = 0;
+	*dest++ = 0;
 }
 
 #endif
