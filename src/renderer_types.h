@@ -134,8 +134,9 @@ struct Shader {
     static Shader *instance(RendererAPI *renderer_api,
 			    const MemoryStorage &memory);
 
-    virtual void uploadUniformMat4(const char *name, const Mat4x4 &matrix) = 0;
-    virtual void uploadUniformInt(const char *name, i32 integer) = 0;
+    virtual void uploadUniformMat4(const char *name, const Mat4x4 &value) = 0;
+    virtual void uploadUniformFloat4(const char *name, const v4 &value) = 0;
+    virtual void uploadUniformInt(const char *name, i32 value) = 0;
     virtual void createProgram(const char *vertex_shader_src,
 			       const char *fragment_shader_src) = 0;
     virtual void bind() = 0;

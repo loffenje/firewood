@@ -1,0 +1,11 @@
+﻿---
+AccessModifierOffset: '4'
+AlignAfterOpenBracket: DontAlign
+BreakStringLiterals: 'true'
+ColumnLimit: '120'
+MaxEmptyLinesToKeep: '31'
+PointerAlignment: Right
+SortIncludes: 'false'
+TabWidth: '2'
+
+...
