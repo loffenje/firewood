@@ -26,7 +26,7 @@ PathFlags="-Wl,-rpath,@loader_path"
 $CXX $CommonFlags ../src/game.cpp -fPIC -shared -o game.so.temp -L/usr/local/lib -lSDL2 -ldl -l SDL2_image $OpenGLFlags
 mv game.so.temp game.so
 
-# Build SDL handmade
+# Build SDL firewood 
 $CXX $CommonFlags ../src/sdl_platform.cpp -o firewood-x86_64  -L/usr/local/lib -lSDL2 -ldl -l SDL2_image $PathFlags $OpenGLFlags 
 
 popd

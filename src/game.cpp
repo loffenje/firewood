@@ -23,6 +23,9 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
     game_state->renderer = alloc<Renderer>(memory.game_partition);
     game_state->renderer->commands = commands;
     game_state->renderer->renderer_2d = renderer_2d;
+    
+    game_state->material_texture = Texture::instance(game_root.renderer_api, memory);
+    game_state->material_texture->create("./assets/container.png");
   }
 
   f32 camera_move_speed = 5.0f;
@@ -30,19 +33,19 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
     GameControllerInput *controller_input = getController(input, controller_index);
 
     if (controller_input->move_up.ended_down) {
-      camera_pos.y += camera_move_speed * input->dt_for_frame;
-    }
-
-    if (controller_input->move_down.ended_down) {
       camera_pos.y -= camera_move_speed * input->dt_for_frame;
     }
 
+    if (controller_input->move_down.ended_down) {
+      camera_pos.y += camera_move_speed * input->dt_for_frame;
+    }
+
     if (controller_input->move_right.ended_down) {
-      camera_pos.x += camera_move_speed * input->dt_for_frame;
+      camera_pos.x -= camera_move_speed * input->dt_for_frame;
     }
 
     if (controller_input->move_left.ended_down) {
-      camera_pos.x -= camera_move_speed * input->dt_for_frame;
+      camera_pos.x += camera_move_speed * input->dt_for_frame;
     }
 
     if (controller_input->action_up.ended_down) {
@@ -63,7 +66,9 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
   game_state->camera.setRotation(camera_rot);
 
   renderer_2d.beginScene(game_state->camera);
-  renderer_2d.drawQuad({0.5f, 0.5f}, {0.5f, 0.5f}, {0.0f, 0.2f, 0.3f, 1.0f});
+  renderer_2d.drawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
+  renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
+  renderer_2d.drawQuad({0.0f, 0.0f, 0.1f}, {0.5f, 0.5f}, game_state->material_texture);
   renderer_2d.endScene();
 
   return 0;

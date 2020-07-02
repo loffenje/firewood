@@ -252,6 +252,9 @@ void OpenGLTexture::create(const char *path) {
   glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+  glTexParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  
   glTexImage2D(GL_TEXTURE_2D, 0, data_format, width, height, 0, data_format,
                GL_UNSIGNED_BYTE, data);
   open_gl->glGenerateMipmap(GL_TEXTURE_2D);
