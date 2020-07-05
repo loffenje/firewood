@@ -36,6 +36,8 @@ using namespace std::chrono;
 #define global_var static
 #define local_var static
 
+#define GAME_INTERNAL 1
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "libs/stb_image.h"
@@ -44,6 +46,7 @@ using namespace std::chrono;
 #include "input.h"
 #include "event.h"
 #include "game_memory.cpp"
+#include "debug_service.h"
 
 enum class RendererType { OpenGL_API };
 
@@ -64,6 +67,7 @@ struct GameRoot {
     MemoryStorage memory_storage;
     RendererAPI *renderer_api;
     GameState *game_state;
+    DebugTable *debug_table;
 };
 
 #include "opengl_platform.cpp"

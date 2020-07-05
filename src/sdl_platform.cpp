@@ -19,11 +19,16 @@
 #define MAX_CONTROLLERS 4
 #define CONTROLLER_AXIS_LEFT_DEADZONE 7849
 
+
 global_var SDL_GameController *controller_handles[MAX_CONTROLLERS];
 global_var SDL_Haptic *rumble_handles[MAX_CONTROLLERS];
 global_var u64 g_perf_counter;
 global_var bool g_running;
 global_var v2i g_aspect_ratio = {16, 9};
+
+#ifdef GAME_INTERNAL
+DebugTable g_debug_table;
+#endif
 
 internal void SDLx_ProcessKeyboardEvent(GameButtonState *new_state, b32 is_down) {
   if (new_state->ended_down != is_down) {
@@ -172,6 +177,10 @@ internal void initializeGameSystems(GameRoot &game_root, SDLx_State &state) {
   memory_storage.game_partition = game_partition;
   game_root.memory_storage = memory_storage;
   game_root.renderer_api = RendererAPI::instance();
+
+#ifdef GAME_INTERNAL
+  game_root.debug_table = &g_debug_table;
+#endif
   //	game_root.filesystem_api = FileSystemAPI::instance();
   //	game_root.resource_manager = ResourceManager::instance();
 }
@@ -296,6 +305,7 @@ int main() {
   f32 target_seconds_per_frame = 1 / game_update_hz;
   //*********** GAME LOOP *********************//
   while (g_running) {
+
     new_input->dt_for_frame = target_seconds_per_frame;
     GameControllerInput *old_keyboard_controller = getController(old_input, 0);
     GameControllerInput *new_keyboard_controller = getController(new_input, 0);
@@ -311,7 +321,7 @@ int main() {
     SDLx_ProcessEvents(state, new_keyboard_controller);
 
     if (game.updateAndRenderer) {
-      game.updateAndRenderer(new_input, game_root);
+        game.updateAndRenderer(new_input, game_root);
     }
 
     b32 should_be_reloaded = game_code.isCodeChanged();
@@ -323,6 +333,9 @@ int main() {
     SDL_GL_SwapWindow(window);
 
     u64 end_counter = SDL_GetPerformanceCounter();
+    f32 measured_seconds_per_frame = SDLx_GetSecondsElapsed(last_counter, end_counter);
+    target_seconds_per_frame = measured_seconds_per_frame;
+    FRAME_MARKER(measured_seconds_per_frame);
     last_counter = end_counter;
   }
 

@@ -3,18 +3,28 @@
 
 global_var v3 camera_pos;
 global_var f32 camera_rot = 0.0f;
+global_var int i;
+
+#ifdef GAME_INTERNAL
+DebugTable g_debug_table;
+#endif
 
 extern "C" UPDATE_AND_RENDER(updateAndRender) {
   MemoryStorage memory = game_root.memory_storage;
 
-  if (!game_root.game_state) {
+#ifdef GAME_INTERNAL
+    g_debug_table = *game_root.debug_table;    
+#endif
+
+    if (!game_root.game_state) {
     game_root.game_state = alloc<GameState>(memory.game_partition);
   }
 
   GameState *game_state = game_root.game_state;
   if (!game_state->renderer && !game_state->running) {
     game_state->running = true;
-    
+
+
     RendererCommands commands{game_root.renderer_api};
     Renderer2D renderer_2d;
     renderer_2d.init(game_root.renderer_api, memory);
@@ -65,11 +75,17 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
   game_state->camera.setPosition(camera_pos);
   game_state->camera.setRotation(camera_rot);
 
+
+//    fprintf(stdout, "\033[A\33[2KT\rT minus %d seconds...\n", i++);
   renderer_2d.beginScene(game_state->camera);
   renderer_2d.drawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
   renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
   renderer_2d.drawQuad({0.0f, 0.0f, 0.1f}, {0.5f, 0.5f}, game_state->material_texture);
   renderer_2d.endScene();
+
+#ifdef GAME_INTERNAL
+    DEBUGConsolePrint(g_debug_table);
+#endif
 
   return 0;
 }
