@@ -70,21 +70,25 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
   Renderer *renderer = game_state->renderer;
   Renderer2D renderer_2d = renderer->renderer_2d;
 
-  renderer->commands.clear({0.1f, 0.1f, 0.1f});
 
+  BEGIN_PROFILE("Renderer clear"); 
+  renderer->commands.clear({0.1f, 0.1f, 0.1f});
+  END_PROFILE();
+  
   game_state->camera.setPosition(camera_pos);
   game_state->camera.setRotation(camera_rot);
 
 
-//    fprintf(stdout, "\033[A\33[2KT\rT minus %d seconds...\n", i++);
+  BEGIN_PROFILE("Renderer draw");
   renderer_2d.beginScene(game_state->camera);
   renderer_2d.drawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
   renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
   renderer_2d.drawQuad({0.0f, 0.0f, 0.1f}, {0.5f, 0.5f}, game_state->material_texture);
   renderer_2d.endScene();
+  END_PROFILE();
 
 #ifdef GAME_INTERNAL
-    DEBUGConsolePrint(g_debug_table);
+   DEBUG_PlainConsolePrint(g_debug_table);
 #endif
 
   return 0;

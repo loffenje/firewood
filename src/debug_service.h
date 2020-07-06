@@ -27,12 +27,14 @@ extern DebugTable g_debug_table;
 #define DEBUG_NAME_(x, y, z) DEBUG_NAME__(x, y, z)
 #define DEBUG_NAME(name) DEBUG_NAME_(__FILE__, __LINE__, __COUNTER__)
 
-#define recordDebugEvent(event_type, GUIDInit, nameInit)                                                               \
+#define END_DEBUG() g_debug_table.clear()
+
+#define recordDebugEvent(event_type, GUID_init, name_init)                                                             \
   DebugEvent event = {0};                                                                                              \
-  event.clock = SDL_GetPerformanceCounter();                                                                           \
+  event.clock = __rdtsc();                                                                                             \
   event.type = event_type;                                                                                             \
-  event.GUID = GUIDInit;                                                                                               \
-  event.name = nameInit
+  event.GUID = GUID_init;                                                                                              \
+  event.name = name_init
 
 #define BEGIN_PROFILE_(GUID, name)                                                                                     \
   {                                                                                                                    \
@@ -67,21 +69,30 @@ struct TimedBlock {
 };
 
 
-internal void DEBUGConsolePrint(const DebugTable &debug_table) {
+internal void DEBUG_PlainConsolePrint(const DebugTable &debug_table) {
+
   for (const auto &debug_entry : g_debug_table) {
     if (debug_entry.type == DebugType::FrameMarker) {
-      fprintf(stdout, "\033[A\33[2K\rGUID:%s; Name:%s, Sec elapsed:%f.\n", debug_entry.GUID, debug_entry.name,
-          debug_entry.value_f32);
+      fprintf(stdout, "GUID:%s; Name:%s, Sec elapsed:%f.\n", debug_entry.GUID, debug_entry.name, debug_entry.value_f32);
     } else {
-      fprintf(stdout, "\033[A\33[2K\rGUID:%s; Name:%s, Clock:%llu.\n", debug_entry.GUID, debug_entry.name,
-          debug_entry.clock);
+      u64 end_clock = __rdtsc();
+      u64 duration = end_clock - debug_entry.clock;
+      u32 current_kilocycles = static_cast<u32>(duration / 1000);
+      fprintf(stdout, "GUID:%s; Name:%s, Clock:%dkcy.\n", debug_entry.GUID, debug_entry.name, current_kilocycles);
     }
   }
+
+  fprintf(stdout, "\n\n");
+  fflush(stdout);
 }
 
 #else
 
+#define BEGIN_PROFILE(...)
+#define END_PROFILE(...)
+#define TIMED_BLOCK(...)
 #define FRAME_MARKER(...)
+#define END_DEBUG(...)
 
 #endif
 

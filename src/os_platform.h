@@ -31,6 +31,7 @@ using namespace std::chrono;
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <sys/mman.h>
+#include <x86intrin.h>
 
 #define internal static
 #define global_var static

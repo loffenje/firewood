@@ -329,6 +329,7 @@ int main() {
       game_code.reloadCode();
     }
 
+    END_DEBUG();
     swapInput(&new_input, &old_input);
     SDL_GL_SwapWindow(window);
 
