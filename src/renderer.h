@@ -17,10 +17,10 @@ struct Renderer2D {
   void destroy(const MemoryStorage &memory);
   void beginScene(Camera &camera);
   void endScene();
-  void drawQuad(const v2 &pos, const v2 &size, const v4 &color);
-  void drawQuad(const v3 &pos, const v2 &size, const v4 &color);
-  void drawQuad(const v2 &pos, const v2 &size, Texture *texture);
-  void drawQuad(const v3 &pos, const v2 &size, Texture *Texture);
+  void drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &color);
+  void drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &color);
+  void drawQuad(const v2 &pos, const v2 &size, f32 angle, Texture *texture);
+  void drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *Texture);
   
   RendererCommands commands;
   Renderer2D_Data *data;

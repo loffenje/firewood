@@ -1,7 +1,7 @@
 #ifndef DEBUG_SERVICE_H
 #define DEBUG_SERVICE_H
 
-enum class DebugType { BeginProfile, EndProfile, FrameMarker };
+enum class DebugType { BeginProfile, EndProfile, FrameMarker, MemoryUsage };
 
 
 struct DebugEvent {
@@ -62,6 +62,13 @@ extern DebugTable g_debug_table;
     g_debug_table.push_back(event);                                                                                    \
   }
 
+#define MEMORY_USAGE(memory)                                                                                           \
+  {                                                                                                                    \
+    recordDebugEvent(DebugType::MemoryUsage, DEBUG_NAME("Memory Usage"), "Memory Usag");                               \
+    event.value_u32 = memory.resource_partition->used_memory + memory.game_partition->used_memory;                     \
+    g_debug_table.push_back(event);                                                                                    \
+  }
+
 struct TimedBlock {
   TimedBlock(const char *GUID, const char *name) { BEGIN_PROFILE_(GUID, name); }
 
@@ -74,6 +81,8 @@ internal void DEBUG_PlainConsolePrint(const DebugTable &debug_table) {
   for (const auto &debug_entry : g_debug_table) {
     if (debug_entry.type == DebugType::FrameMarker) {
       fprintf(stdout, "GUID:%s; Name:%s, Sec elapsed:%f.\n", debug_entry.GUID, debug_entry.name, debug_entry.value_f32);
+    } else if (debug_entry.type == DebugType::MemoryUsage) {
+      fprintf(stdout, "GUID:%s; Name:%s, Memory used: %d bytes.\n", debug_entry.GUID, debug_entry.name, debug_entry.value_u32);
     } else {
       u64 end_clock = __rdtsc();
       u64 duration = end_clock - debug_entry.clock;

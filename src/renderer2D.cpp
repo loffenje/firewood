@@ -88,29 +88,29 @@ void Renderer2D::beginScene(Camera &camera) {
 
 void Renderer2D::endScene() {}
 
-void Renderer2D::drawQuad(const v2 &pos, const v2 &size, const v4 &color) {
-  drawQuad({pos.x, pos.y, 0.0f}, size, color);
+void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &color) {
+  drawQuad({pos.x, pos.y, 0.0f}, size, angle, color);
 }
 
-void Renderer2D::drawQuad(const v3 &pos, const v2 &size, const v4 &color) {
+void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &color) {
   data->color_shader->bind();
   data->color_shader->uploadUniformFloat4("u_Color", color);
 
-  Transform model = translate(pos) * scale(size.x, size.y, 1.0f);
+  Transform model = translate(pos) * rotZ(angle) * scale(size.x, size.y, 1.0f);
   data->color_shader->uploadUniformMat4("u_Model", model.matrix);
 
   data->quad_va->bind();
   commands.drawIndexed(data->quad_va);
 }
 
-void Renderer2D::drawQuad(const v2 &pos, const v2 &size, Texture *texture) {
-  drawQuad({pos.x, pos.y, 0.0f}, size, texture);
+void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, Texture *texture) {
+  drawQuad({pos.x, pos.y, 0.0f}, size, angle, texture);
 }
 
-void Renderer2D::drawQuad(const v3 &pos, const v2 &size, Texture *texture) {
+void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *texture) {
   data->texture_shader->bind();
 
-  Transform model = translate(pos) * scale(size.x, size.y, 1.0f);
+  Transform model = translate(pos) * rotZ(angle) *scale(size.x, size.y, 1.0f);
   data->texture_shader->uploadUniformMat4("u_Model", model.matrix);
 
   texture->bind();
