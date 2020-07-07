@@ -183,17 +183,17 @@ struct OpenGLIndexBuffer : public IndexBuffer {
   unsigned int ibo;
   u32 count;
   OpenGL *open_gl;
-  void create(u32 *indices, u32 size) override;
+  void create(u32 *indices, u32 count) override;
   inline void bind() override;
   inline void unbind() override;
   inline u32 getCount() override;
 };
 
-void OpenGLIndexBuffer::create(u32 *indices, u32 size) {
-  count = size;
+void OpenGLIndexBuffer::create(u32 *indices, u32 count) {
+  this->count = count;
   open_gl->glGenBuffers(1, &ibo);
   open_gl->glBindBuffer(GL_ARRAY_BUFFER, ibo);
-  open_gl->glBufferData(GL_ARRAY_BUFFER, size * sizeof(u32), indices,
+  open_gl->glBufferData(GL_ARRAY_BUFFER, count * sizeof(u32), indices,
                         GL_STATIC_DRAW);
 }
 

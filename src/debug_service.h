@@ -64,7 +64,7 @@ extern DebugTable g_debug_table;
 
 #define MEMORY_USAGE(memory)                                                                                           \
   {                                                                                                                    \
-    recordDebugEvent(DebugType::MemoryUsage, DEBUG_NAME("Memory Usage"), "Memory Usag");                               \
+    recordDebugEvent(DebugType::MemoryUsage, DEBUG_NAME("Memory Usage"), "Memory Usage");                               \
     event.value_u32 = memory.resource_partition->used_memory + memory.game_partition->used_memory;                     \
     g_debug_table.push_back(event);                                                                                    \
   }

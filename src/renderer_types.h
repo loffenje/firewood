@@ -107,7 +107,7 @@ struct IndexBuffer {
     static IndexBuffer *instance(RendererAPI *renderer_api,
 				 const MemoryStorage &memory);
 
-    virtual void create(u32 *indices, u32 size) = 0;
+    virtual void create(u32 *indices, u32 count = 0) = 0;
     virtual inline void bind() = 0;
     virtual inline void unbind() = 0;
     virtual inline u32 getCount() = 0;
@@ -161,7 +161,7 @@ class RendererAPI {
     virtual void init(SDL_Window *window) = 0;
     virtual void *getContext() = 0;
     virtual void clear(v3 color) = 0;
-    virtual void drawIndexed(VertexArray *vertex_array) = 0;
+    virtual void drawIndexed(VertexArray *vertex_array, u32 count = 0) = 0;
     virtual ~RendererAPI() {}
 
    protected:

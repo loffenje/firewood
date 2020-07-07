@@ -2,8 +2,8 @@
 
 inline void RendererCommands::clear(v3 color) { renderer_api->clear(color); }
 
-inline void RendererCommands::drawIndexed(VertexArray *vertex_array) {
-    renderer_api->drawIndexed(vertex_array);
+inline void RendererCommands::drawIndexed(VertexArray *vertex_array, u32 count) {
+    renderer_api->drawIndexed(vertex_array, count);
 }
 
 void Renderer::beginScene(Camera &camera) {
