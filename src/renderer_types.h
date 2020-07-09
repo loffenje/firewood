@@ -134,9 +134,10 @@ struct Shader {
     static Shader *instance(RendererAPI *renderer_api,
 			    const MemoryStorage &memory);
 
-    virtual void uploadUniformMat4(const char *name, const Mat4x4 &value) = 0;
-    virtual void uploadUniformFloat4(const char *name, const v4 &value) = 0;
-    virtual void uploadUniformInt(const char *name, i32 value) = 0;
+    virtual void uploadArrayi(const char *name, i32 *values, u32 count) = 0;
+    virtual void uploadMat4(const char *name, const Mat4x4 &value) = 0;
+    virtual void uploadFloat4(const char *name, const v4 &value) = 0;
+    virtual void uploadInt(const char *name, i32 value) = 0;
     virtual void createProgram(const char *vertex_shader_src,
 			       const char *fragment_shader_src) = 0;
     virtual void bind() = 0;
@@ -149,8 +150,11 @@ struct Texture {
 			     const MemoryStorage &memory);
 
     virtual void create(const char *path) = 0;
+    virtual void create(u32 width, u32 height) = 0;
     virtual void getDimension(u32 &width, u32 &height) = 0;
-    virtual void bind() = 0;
+    virtual void bind(u32 slot = 0) = 0;
+    virtual void setData(void *data, u32 size) = 0;
+    virtual bool operator==(const Texture &other) = 0;
     virtual ~Texture() = default;
 };
 

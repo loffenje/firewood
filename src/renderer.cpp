@@ -15,8 +15,8 @@ void Renderer::endScene() {}
 void Renderer::submit(VertexArray *vertex_array, Shader *shader,
                       const Mat4x4 &model) {
   shader->bind();
-  shader->uploadUniformMat4("u_ViewProjection", scene.view_projection_mat);
-  shader->uploadUniformMat4("u_Model", model);
+  shader->uploadMat4("u_ViewProjection", scene.view_projection_mat);
+  shader->uploadMat4("u_Model", model);
 
   vertex_array->bind();
   commands.drawIndexed(vertex_array);

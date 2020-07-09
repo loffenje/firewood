@@ -25,6 +25,7 @@ typedef int32_t b32;
 #include <memory>
 #include <string>
 #include <vector>
+#include <array>
 
 using namespace std::chrono;
 
@@ -37,7 +38,11 @@ using namespace std::chrono;
 #define global_var static
 #define local_var static
 
-#define GAME_INTERNAL 1
+#define DEBUG
+
+#if defined(DEBUG)
+#define FIREWOOD_INTERNAL // Enable internal components e.g. Debugging 
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 

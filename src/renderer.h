@@ -1,3 +1,12 @@
+#ifndef RENDERER_H
+#define RENDERER_H
+
+namespace {
+constexpr u32 max_quads = 2000;
+constexpr u32 max_vertices = max_quads * 4;
+constexpr u32 max_indices = max_quads * 6;
+constexpr u32 max_texture_slots = 16; // TODO: render settings. Could differ on other GPUs
+}; // namespace
 
 struct RendererCommands {
   RendererAPI *renderer_api;
@@ -10,17 +19,21 @@ struct QuadVertex {
   v3 position;
   v4 color;
   v2 tex_coord;
+  f32 tex_index;
 };
 
 struct Renderer2D_Data {
   VertexArray *quad_va;
   VertexBuffer *quad_vbo;
-  Shader *color_shader;
   Shader *texture_shader;
+  Texture *white_texture;
 
   u32 quad_index_count = 0;
   QuadVertex *quad_buffer_base = nullptr;
   QuadVertex *quad_buffer_ptr = nullptr;
+
+  std::array<Texture *, max_texture_slots> texture_slots;
+  u32 texture_slot_index = 1;
 };
 
 struct Renderer2D {
@@ -49,3 +62,5 @@ struct Renderer {
   Renderer2D renderer_2d;
   Scene scene;
 };
+
+#endif

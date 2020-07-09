@@ -19,7 +19,7 @@ struct DebugEvent {
 
 typedef std::vector<DebugEvent> DebugTable;
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
 
 extern DebugTable g_debug_table;
 
@@ -102,6 +102,7 @@ internal void DEBUG_PlainConsolePrint(const DebugTable &debug_table) {
 #define TIMED_BLOCK(...)
 #define FRAME_MARKER(...)
 #define END_DEBUG(...)
+#define MEMORY_USAGE(...)
 
 #endif
 

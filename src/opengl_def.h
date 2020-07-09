@@ -25,6 +25,7 @@ typedef GLint APIENTRY type_glGetUniformLocation(GLuint program, const GLchar *n
 typedef void APIENTRY type_glUniform4fv(GLint location, GLsizei count, const GLfloat *value);
 typedef void APIENTRY type_glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 typedef void APIENTRY type_glUniform1i(GLint location, GLint v0);
+typedef void APIENTRY type_glUniform1iv(GLint location, GLsizei count, const GLint *value);
 typedef void APIENTRY type_glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
 typedef void APIENTRY type_glUniform1f(GLint location, GLfloat v0);
 typedef void APIENTRY type_glUniform2fv(GLint location, GLsizei count, const GLfloat *value);
@@ -96,6 +97,7 @@ struct OpenGL {
   openGLFunction(glUniform4fv);
   openGLFunction(glUniformMatrix4fv);
   openGLFunction(glUniform1i);
+  openGLFunction(glUniform1iv);
   openGLFunction(glUniform1f);
   openGLFunction(glUniform4f);
   openGLFunction(glUniform2fv);
@@ -158,6 +160,7 @@ void *OpenGLRendererAPI::getContext() {
 void OpenGLRendererAPI::drawIndexed(VertexArray *vertex_array, u32 index_count) {
   u32 count = index_count ? vertex_array->index_buffer->getCount() : index_count;
   glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 OpenGL *OpenGLRendererAPI::rendererAlloc(size_t size) {
@@ -204,6 +207,7 @@ void OpenGLRendererAPI::init(SDL_Window *window) {
     SDL_GetOpenGLFunction(glUniform4fv);
     SDL_GetOpenGLFunction(glUniformMatrix4fv);
     SDL_GetOpenGLFunction(glUniform1i);
+    SDL_GetOpenGLFunction(glUniform1iv);
     SDL_GetOpenGLFunction(glBufferSubData);
     SDL_GetOpenGLFunction(glEnableVertexAttribArray);
     SDL_GetOpenGLFunction(glDisableVertexAttribArray);

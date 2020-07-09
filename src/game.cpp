@@ -3,16 +3,16 @@
 
 global_var v3 camera_pos;
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
 DebugTable g_debug_table;
 #endif
 
 extern "C" UPDATE_AND_RENDER(updateAndRender) {
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
   g_debug_table = *game_root.debug_table;
 #endif
-
+    
   MemoryStorage memory = game_root.memory_storage;
 
 
@@ -73,13 +73,14 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
   renderer_2d.beginScene(game_state->camera);
   renderer_2d.drawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, 45.0f, {0.8f, 0.2f, 0.3f, 1.0f});
   renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, 0.0f, {0.2f, 0.3f, 0.8f, 1.0f});
-  renderer_2d.drawQuad({0.0f, 0.0f, 0.1f}, {0.5f, 0.5f}, 0.0f, game_state->material_texture);
+  renderer_2d.drawQuad({-5.0f, -5.0f, -0.1f}, {0.5f, 0.5f}, 0.0f, game_state->material_texture);
+  renderer_2d.drawQuad({-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, 0.0f, game_state->material_texture);
   renderer_2d.endScene();
   END_PROFILE();
 
   MEMORY_USAGE(memory);
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
   DEBUG_PlainConsolePrint(g_debug_table);
 #endif
 

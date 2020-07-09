@@ -37,9 +37,10 @@ struct OpenGLShader : public Shader {
                      const char *fragment_shader_src) override;
   void bind() override;
   void unbind() override;
-  void uploadUniformMat4(const char *name, const Mat4x4 &value) override;
-  void uploadUniformFloat4(const char *name, const v4 &value) override;
-  void uploadUniformInt(const char *name, i32 value) override;
+  void uploadArrayi(const char *name, i32 *values, u32 count) override;
+  void uploadMat4(const char *name, const Mat4x4 &value) override;
+  void uploadFloat4(const char *name, const v4 &value) override;
+  void uploadInt(const char *name, i32 value) override;
 };
 
 void OpenGLShader::bind() { open_gl->glUseProgram(program_id); }
@@ -88,17 +89,23 @@ void OpenGLShader::createProgram(const char *vertex_shader_src,
   program_id = shader_program;
 }
 
-void OpenGLShader::uploadUniformMat4(const char *name, const Mat4x4 &value) {
+void OpenGLShader::uploadArrayi(const char *name, i32 *values, u32 count)
+{
+  GLint location = open_gl->glGetUniformLocation(program_id, name);
+  open_gl->glUniform1iv(location, count, values);
+}
+
+void OpenGLShader::uploadMat4(const char *name, const Mat4x4 &value) {
   GLint location = open_gl->glGetUniformLocation(program_id, name);
   open_gl->glUniformMatrix4fv(location, 1, GL_FALSE, value.n[0]);
 }
 
-void OpenGLShader::uploadUniformFloat4(const char *name, const v4 &value) {
+void OpenGLShader::uploadFloat4(const char *name, const v4 &value) {
   GLint location = open_gl->glGetUniformLocation(program_id, name);
   open_gl->glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
-void OpenGLShader::uploadUniformInt(const char *name, i32 value) {
+void OpenGLShader::uploadInt(const char *name, i32 value) {
   GLint location = open_gl->glGetUniformLocation(program_id, name);
   open_gl->glUniform1i(location, value);
 }
@@ -216,17 +223,39 @@ struct OpenGLTexture : public Texture {
 
   ~OpenGLTexture() { glDeleteTextures(1, &texture); }
 
+  void create(u32 width, u32 height) override;
   void create(const char *path) override;
   void getDimension(u32 &width, u32 &height) override;
-  void bind() override;
+  void bind(u32 slot = 0) override;
+  void setData(void *data, u32 size) override;
+  bool operator==(const Texture &other) override {
+    return texture == ((OpenGLTexture &)other).texture;
+  }
 
   unsigned int texture;
 
   OpenGL *open_gl;
+  GLenum data_format_;
   u32 width;
   u32 height;
   const char *path;
 };
+
+void OpenGLTexture::create(u32 width, u32 height)
+{ 
+   data_format_ = GL_RGBA;
+   
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ 
+  this->width = width;
+  this->height = height;
+}
 
 void OpenGLTexture::create(const char *path) {
   i32 img_width;
@@ -247,6 +276,8 @@ void OpenGLTexture::create(const char *path) {
     data_format = GL_RGB;
   }
 
+  data_format_ = data_format;
+
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
   glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -261,12 +292,25 @@ void OpenGLTexture::create(const char *path) {
   stbi_image_free(data);
 }
 
+void OpenGLTexture::setData(void *data, u32 size)
+{
+  u32 bpp = data_format_ == GL_RGBA ? 4 : 3;
+  assert(size == width * height * bpp && "Texture should be defined entirely!");
+
+  glTexImage2D(GL_TEXTURE_2D, 0, data_format_, width, height, 0, data_format_,
+               GL_UNSIGNED_BYTE, data);
+  open_gl->glGenerateMipmap(GL_TEXTURE_2D);
+}
+
 void OpenGLTexture::getDimension(u32 &width, u32 &height) {
   width = this->width;
   height = this->height;
 }
 
-void OpenGLTexture::bind() { glBindTexture(GL_TEXTURE_2D, texture); }
+void OpenGLTexture::bind(u32 slot) { 
+  glActiveTexture(GL_TEXTURE0 + slot);
+  glBindTexture(GL_TEXTURE_2D, texture);
+}
 
 struct OpenGLVertexArray : public VertexArray {
   OpenGLVertexArray(RendererAPI *renderer_api) {

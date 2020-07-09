@@ -26,7 +26,7 @@ global_var u64 g_perf_counter;
 global_var bool g_running;
 global_var v2i g_aspect_ratio = {16, 9};
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
 DebugTable g_debug_table;
 #endif
 
@@ -178,7 +178,7 @@ internal void initializeGameSystems(GameRoot &game_root, SDLx_State &state) {
   game_root.memory_storage = memory_storage;
   game_root.renderer_api = RendererAPI::instance();
 
-#ifdef GAME_INTERNAL
+#ifdef FIREWOOD_INTERNAL
   game_root.debug_table = &g_debug_table;
 #endif
   //	game_root.filesystem_api = FileSystemAPI::instance();
@@ -264,7 +264,7 @@ int main() {
 
   char src_game_dll_fullpath[SDL_PATH_MAX];
   state.buildEXEFileName("game.so", sizeof(src_game_dll_fullpath), src_game_dll_fullpath);
-  SDL_Window *window = SDL_CreateWindow("stuff", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 540,
+  SDL_Window *window = SDL_CreateWindow("Firewood", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 540,
       SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
 
   if (!window) {
