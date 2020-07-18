@@ -82,6 +82,11 @@ void Renderer2D::init(RendererAPI *renderer_api, const MemoryStorage &memory) {
   data.texture_shader->uploadArrayi("u_Textures", samplers, max_texture_slots);
 
   data.texture_slots[0] = data.white_texture;
+  
+  data.quad_vertices[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
+  data.quad_vertices[1] = {0.5f, -0.5f, 0.0f, 1.0f};
+  data.quad_vertices[2] = {0.5f, 0.5f, 0.0f, 1.0f};
+  data.quad_vertices[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
 }
 
 void Renderer2D::beginScene(Camera &camera) {
@@ -114,27 +119,35 @@ void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &co
 }
 
 void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &color) {
+ 
   f32 tex_index = 0.0f; //white texture
-  
-  data.quad_buffer_ptr->position = pos;
+ 
+  Mat4x4 tran = identity(); 
+  if (angle != 0.0f) {
+    tran = translate(pos) * rotZ(angle) * scale({size.x, size.y, 1.0f});
+  } else {
+    tran = translate(pos)  * scale({size.x, size.y, 1.0f});
+  }
+
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {0.0f, 0.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x + size.x, pos.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[1];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {1.0f, 0.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x + size.x, pos.y + size.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[2];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {1.0f, 1.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x, pos.y + size.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[3];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {0.0f, 1.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
@@ -148,7 +161,6 @@ void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, Texture *tex
 }
 
 void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *texture) {
-
   v4 color = {1.0f, 1.0f, 1.0f, 1.0f};
   f32 tex_index = 0.0f;
   for (u32 i = 1; i < data.texture_slot_index; i++) {
@@ -163,26 +175,29 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *tex
     data.texture_slots[data.texture_slot_index] = texture;
     data.texture_slot_index++;
   }
-    
-  data.quad_buffer_ptr->position = pos;
+   
+  Mat4x4 tran = identity(); 
+  tran = translate(pos)  * scale(v3{size.x, size.y, 1.0f});
+  
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {0.0f, 0.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x + size.x, pos.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[1];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {1.0f, 0.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x + size.x, pos.y + size.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[2];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {1.0f, 1.0f};
   data.quad_buffer_ptr->tex_index = tex_index;
   data.quad_buffer_ptr++;
 
-  data.quad_buffer_ptr->position = {pos.x, pos.y + size.y, 0.0f};
+  data.quad_buffer_ptr->position = tran * data.quad_vertices[3];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {0.0f, 1.0f};
   data.quad_buffer_ptr->tex_index = tex_index;

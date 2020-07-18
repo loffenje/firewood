@@ -71,10 +71,10 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
 
   BEGIN_PROFILE("Renderer draw");
   renderer_2d.beginScene(game_state->camera);
-  renderer_2d.drawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, 45.0f, {0.8f, 0.2f, 0.3f, 1.0f});
-  renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, 0.0f, {0.2f, 0.3f, 0.8f, 1.0f});
-  renderer_2d.drawQuad({-5.0f, -5.0f, -0.1f}, {0.5f, 0.5f}, 0.0f, game_state->material_texture);
-  renderer_2d.drawQuad({-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, 0.0f, game_state->material_texture);
+
+  renderer_2d.drawQuad({ 0.5f, 0.0f }, { 0.8f, 0.8f }, 0.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
+  renderer_2d.drawQuad( { -0.5f, 0.5f, 0.1f }, { 0.5f, 0.75f }, 0.0f, game_state->material_texture);
+  renderer_2d.drawQuad({ 0.5f, 0.1f }, { 0.25f, 0.25f }, 0.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
   renderer_2d.endScene();
   END_PROFILE();
 

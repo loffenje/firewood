@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-const f32 Pi = 3.14159265358979323846;
+constexpr f32 Pi = 3.14159265358979323846;
 
 namespace math {
 inline f32 radians(f32 deg) { return (Pi / 180) * deg; }
@@ -99,6 +99,11 @@ inline T dot(const Vector2<T> &a, const Vector2<T> &b) {
 }
 
 template <typename T>
+struct Vector4 {
+    T x, y, z, w;
+};
+
+template <typename T>
 struct Vector3 {
     T x, y, z;
 
@@ -108,6 +113,12 @@ struct Vector3 {
 	x = a;
 	y = b;
 	z = c;
+    }
+
+    Vector3(const Vector4<T> &v) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
     }
 
     Vector3<T> &operator+=(const Vector3<T> &v) {
@@ -195,10 +206,6 @@ inline Vector3<T> reject(const Vector3<T> &a, const Vector3<T> &b) {
     return a - b * (dot(a, b) / dot(b, b));
 }
 
-template <typename T>
-struct Vector4 {
-    T x, y, z, w;
-};
 
 typedef Vector2<float> v2;
 typedef Vector2<int> v2i;
@@ -206,284 +213,146 @@ typedef Vector3<int> v3i;
 typedef Vector3<float> v3;
 typedef Vector4<float> v4;
 
-template <typename T>
-struct Mat3x3 {
-    T n[3][3];
-
-    Mat3x3() = default;
-
-    Mat3x3(T n00, T n01, T n02, T n10, T n11, T n12, T n20, T n21, T n22) {
-	n[0][0] = n00;
-	n[0][1] = n10;
-	n[0][2] = n20;
-	n[1][0] = n01;
-	n[1][1] = n11;
-	n[1][2] = n21;
-	n[2][0] = n02;
-	n[2][1] = n12;
-	n[2][2] = n22;
-    }
-
-    Mat3x3(const Vector3<T> &a, const Vector3<T> &b, const Vector3<T> &c) {
-	n[0][0] = a.x;
-	n[0][1] = a.y;
-	n[0][2] = a.z;
-	n[1][0] = b.x;
-	n[1][1] = b.y;
-	n[1][2] = b.z;
-	n[2][0] = c.x;
-	n[2][1] = c.y;
-	n[2][2] = c.z;
-    }
-
-    T &operator()(int i, int j) { return n[i][j]; }
-
-    Vector3<T> &operator[](int j) {
-	return *reinterpret_cast<Vector3<T> *>(n[j]);
-    }
-};
-
-template <typename T>
-Mat3x3<T> operator*(const Mat3x3<T> &a, const Mat3x3<T> &b) {
-    return Mat3x3<T>(a(0, 0) * b(0, 0) + a(0, 1) * b(1, 0) + a(0, 2) * b(2, 0),
-		     a(0, 0) * b(0, 1) + a(0, 1) * b(1, 1) + a(0, 2) * b(2, 1),
-		     a(0, 0) * b(0, 2) + a(0, 1) * b(1, 2) + a(0, 2) * b(2, 2),
-		     a(1, 0) * b(0, 0) + a(1, 1) * b(1, 0) + a(1, 2) * b(2, 0),
-		     a(1, 0) * b(0, 1) + a(1, 1) * b(1, 1) + a(1, 2) * b(2, 1),
-		     a(1, 0) * b(0, 2) + a(1, 1) * b(1, 2) + a(1, 2) * b(2, 2),
-		     a(2, 0) * b(0, 0) + a(2, 1) * b(1, 0) + a(2, 2) * b(2, 0),
-		     a(2, 0) * b(0, 1) + a(2, 1) * b(1, 1) + a(2, 2) * b(2, 1),
-		     a(2, 0) * b(0, 2) + a(2, 1) * b(1, 2) + a(2, 2) * b(2, 2));
-}
-
-template <typename T>
-Vector3<T> operator*(const Mat3x3<T> &m, const Vector3<T> &v) {
-    return Vector3<T>(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
-		      m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
-		      m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z);
-}
-
-template <typename T>
-T det(const Mat3x3<T> &m) {
-    return m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1)) +
-	   m(0, 1) * (m(1, 2) * m(2, 0) - m(1, 0) * m(2, 2)) +
-	   m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0));
-}
-
-template <typename T>
-Mat3x3<T> inverse(const Mat3x3<T> &m) {
-    const Vector3<T> &a = m[0];
-    const Vector3<T> &b = m[1];
-    const Vector3<T> &c = m[2];
-
-    Vector3<T> r0 = cross(b, c);
-    Vector3<T> r1 = cross(c, a);
-    Vector3<T> r2 = cross(a, b);
-
-    float inv_det = 1.0f / dot(r2, c);
-
-    return Mat3x3<T>(r0.x * inv_det, r0.y * inv_det, r0.z * inv_det,
-		     r1.x * inv_det, r1.y * inv_det, r1.z * inv_det,
-		     r2.x * inv_det, r2.y * inv_det, r2.z * inv_det);
-}
-
 struct Mat4x4 {
-    f32 n[4][4];
-
-    Mat4x4() {
-	n[0][0] = n[1][1] = n[2][2] = n[3][3] = 1.f;
-	n[0][1] = n[0][2] = n[0][3] = n[1][0] = n[1][2] = n[1][3] = n[2][0] =
-	    n[2][1] = n[2][3] = n[3][0] = n[3][1] = n[3][2] = 0.f;
-    }
-
-    Mat4x4(f32 n00, f32 n01, f32 n02, f32 n03, f32 n10, f32 n11, f32 n12,
-	   f32 n13, f32 n20, f32 n21, f32 n22, f32 n23, f32 n30, f32 n31,
-	   f32 n32, f32 n33) {
-	n[0][0] = n00;
-	n[0][1] = n10;
-	n[0][2] = n20;
-	n[0][3] = n30;
-	n[1][0] = n01;
-	n[1][1] = n11;
-	n[1][2] = n21;
-	n[1][3] = n31;
-	n[2][0] = n02;
-	n[2][1] = n12;
-	n[2][2] = n22;
-	n[2][3] = n32;
-	n[3][0] = n03;
-	n[3][1] = n13;
-	n[3][2] = n23;
-	n[3][3] = n33;
-    }
-
-    f32 &operator()(int row, int col) { return n[row][col]; }
-
-    Mat4x4 transpose(const Mat4x4 &m);
+    f32 e[4][4]; // ROW-MAJOR entries
 };
 
-Mat4x4 operator*(const Mat4x4 &m1, const Mat4x4 &m2) {
-    Mat4x4 r;
-    for (int row = 0; row < 4; ++row) {
-	for (int col = 0; col < 4; ++col) {
-	    r.n[row][col] =
-		m1.n[row][0] * m2.n[0][col] + m1.n[row][1] * m2.n[1][col] +
-		m1.n[row][2] * m2.n[2][col] + m1.n[row][3] * m2.n[3][col];
-	}
+Mat4x4 operator*(const Mat4x4 &a, const Mat4x4 &b) {
+    Mat4x4 result = {};
+    for (int row = 0; row <= 3; ++row) {
+        for (int col = 0; col <= 3; ++col) {
+            for (int i = 0; i <= 3; ++i) {
+                result.e[row][col] += a.e[row][i]*b.e[i][col];
+            }
+        }
     }
-
-    return r;
-}
-
-Mat4x4 transpose(const Mat4x4 &m) {
-    return Mat4x4(m.n[0][0], m.n[1][0], m.n[2][0], m.n[3][0], m.n[0][1],
-		  m.n[1][1], m.n[2][1], m.n[3][1], m.n[0][2], m.n[1][2],
-		  m.n[2][2], m.n[3][2], m.n[0][3], m.n[1][3], m.n[2][3],
-		  m.n[3][3]);
-}
-
-Mat4x4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far) {
-    Mat4x4 result;
-    result.n[0][0] = 2.0f / (right - left);
-    result.n[1][1] = 2.0f / (top - bottom);
-    result.n[2][2] = -2.0f / (far - near);
-    result.n[3][0] = -(right + left) / (right - left);
-    result.n[3][1] = -(top + bottom) / (top - bottom);
-    result.n[3][2] = -(far + near) / (far - near);
 
     return result;
 }
 
-struct Transform {
-    Mat4x4 matrix;
-    Transform() = default;
-    Transform(const Mat4x4 &m) : matrix{m} {}
-    Transform(const f32 mat[4][4]) {
-	matrix = Mat4x4(mat[0][0], mat[0][1], mat[0][2], mat[0][3], mat[1][0],
-			mat[1][1], mat[1][2], mat[1][3], mat[2][0], mat[2][1],
-			mat[2][2], mat[2][3], mat[3][0], mat[3][1], mat[3][2],
-			mat[3][3]);
+inline Mat4x4 identity()
+{
+    Mat4x4 result = {
+        {{1,0,0,0},
+        {0,1,0,0},
+        {0,0,1,0},
+        {0,0,0,1}}
+    };
+    
+    return result;
+}
+
+inline Mat4x4 transpose(const Mat4x4 &m) {
+    Mat4x4 result;
+
+    for (int j = 0; j <= 3; ++j) {
+        for (int i = 0; i <= 3; ++i) {
+            result.e[j][i] = m.e[i][j];
+        }
     }
 
-    Transform operator*(const Transform &t);
-};
-
-Transform Transform::operator*(const Transform &t) {
-    return Transform(matrix * t.matrix);
+    return result;
 }
 
-Transform transpose(const Transform &t) {
-    return Transform(transpose(t.matrix));
+Mat4x4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far) {
+    Mat4x4 result = identity();
+    result.e[0][0] = 2.0f / (right - left);
+    result.e[1][1] = 2.0f / (top - bottom);
+    result.e[2][2] = -2.0f / (far - near);
+    result.e[3][0] = -(right + left) / (right - left);
+    result.e[3][1] = -(top + bottom) / (top - bottom);
+    result.e[3][2] = -(far + near) / (far - near);
+
+    return result;
 }
 
-Transform translate(const v3 &delta) {
-    Mat4x4 m(1, 0, 0, delta.x, 0, 1, 0, delta.y, 0, 0, 1, delta.z, 0, 0, 0, 1);
 
-    return Transform(m);
+inline Mat4x4 translate(const v3 &delta) {
+    Mat4x4 result = {
+            {{1, 0, 0, delta.x},
+            {0, 1, 0, delta.y},
+            {0, 0, 1, delta.z}, 
+            {0, 0, 0, 1}}
+    };
+
+    return result;
 }
 
-Transform scale(f32 x, f32 y, f32 z) {
-    Mat4x4 m(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);
+inline Mat4x4 scale(const v3 &size) {
+    Mat4x4 result = {
+            {{size.x, 0, 0, 0}, 
+            {0, size.y, 0, 0}, 
+            {0, 0, size.z, 0}, 
+            {0, 0, 0, 1}}
+    };
 
-    return Transform(m);
+    return result;
 }
 
-Transform rotX(f32 t) {
+inline Mat4x4 rotX(f32 t) {
     f32 sin_t = sin(math::radians(t));
     f32 cos_t = cos(math::radians(t));
 
-    Mat4x4 m(1, 0, 0, 0, 0, cos_t, -sin_t, 0, 0, sin_t, cos_t, 0, 0, 0, 0, 1);
+    Mat4x4 result = {
+            {{1, 0, 0, 0}, 
+            {0, cos_t, -sin_t, 0}, 
+            {0, sin_t, cos_t, 0},
+            {0, 0, 0, 1}},
+    };
 
-    return Transform(m);
+    return result;
 }
 
-Transform rotY(f32 t) {
+inline Mat4x4 rotY(f32 t) {
     f32 sin_t = sin(math::radians(t));
     f32 cos_t = cos(math::radians(t));
 
-    Mat4x4 m(cos_t, 0, sin_t, 0, 0, 1, 0, 0, -sin_t, 0, cos_t, 0, 0, 0, 0, 1);
+    Mat4x4 result = {
+            {{cos_t, 0, sin_t, 0},
+            {0, 1, 0, 0}, 
+            {-sin_t, 0, cos_t, 0}, 
+            {0, 0, 0, 1}}
+    };
 
-    return Transform(m);
+    return result;
 }
 
-Transform rotZ(f32 t) {
+inline Mat4x4 rotZ(f32 t) {
     f32 sin_t = sin(math::radians(t));
     f32 cos_t = cos(math::radians(t));
 
-    Mat4x4 m(cos_t, -sin_t, 0, 0, sin_t, cos_t, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    Mat4x4 result = {
+        {{cos_t, -sin_t, 0, 0}, 
+        {sin_t, cos_t, 0, 0},
+        {0, 0, 1, 0}, 
+        {0, 0, 0, 1}}
+    };
 
-    return Transform(m);
+    return result;
 }
 
-Transform rotate(f32 t, const v3 &axis) {
-    v3 a = normalize(axis);
-    f32 sin_t = sin(math::radians(t));
-    f32 cos_t = cos(math::radians(t));
+internal v4 transform(const Mat4x4 &m, v4 p) {
+    v4 result;
 
-    Mat4x4 m;
-    m.n[0][0] = a.x * a.x + (1 - a.x * a.x) * cos_t;
-    m.n[0][1] = a.x * a.y * (1 - cos_t) - a.z * sin_t;
-    m.n[0][2] = a.x * a.z * (1 - cos_t) + a.y * sin_t;
-    m.n[0][3] = 0;
-
-    m.n[1][0] = a.x * a.y * (1 - cos_t) + a.z * sin_t;
-    m.n[1][1] = a.y * a.y + (1 - a.y * a.y) * cos_t;
-    m.n[1][2] = a.y * a.z * (1 - cos_t) - a.x * sin_t;
-    m.n[1][3] = 0;
-
-    m.n[2][0] = a.x * a.z * (1 - cos_t) - a.y * sin_t;
-    m.n[2][1] = a.y * a.z * (1 - cos_t) + a.x * sin_t;
-    m.n[2][2] = a.z * a.z + (1 - a.z * a.z) * cos_t;
-    m.n[2][3] = 0;
-
-    return Transform(m);
+    result.x = p.x*m.e[0][0] + p.y*m.e[0][1] + p.z*m.e[0][2] + p.w*m.e[0][3];
+    result.y = p.x*m.e[1][0] + p.y*m.e[1][1] + p.z*m.e[1][2] + p.w*m.e[1][3];
+    result.z = p.x*m.e[2][0] + p.y*m.e[2][1] + p.z*m.e[2][2] + p.w*m.e[2][3];
+    result.w = p.x*m.e[3][0] + p.y*m.e[3][1] + p.z*m.e[3][2] + p.w*m.e[3][3];
+    
+    return result;
 }
 
-Mat4x4 affineInverse(Transform &t) {
-    const v3 &a = reinterpret_cast<const v3 &>(t.matrix.n[0]);
-    const v3 &b = reinterpret_cast<const v3 &>(t.matrix.n[1]);
-    const v3 &c = reinterpret_cast<const v3 &>(t.matrix.n[2]);
-    const v3 &d = reinterpret_cast<const v3 &>(t.matrix.n[3]);
+inline v3 operator*(const Mat4x4 &m, v3 p) {
+    v4 result = transform(m, v4{p.x,p.y,p.z, 1.0f});
 
-    f32 &x = t.matrix(3, 0);
-    f32 &y = t.matrix(3, 1);
-    f32 &z = t.matrix(3, 2);
-    f32 &w = t.matrix(3, 3);
-
-    v3 s = cross(a, b);
-    v3 k = cross(c, d);
-    v3 u = a * y - b * x;
-    v3 v = c * w - d * z;
-
-    f32 inv_det = 1.0f / dot(s, v) + dot(k, u);
-    s *= inv_det;
-    k *= inv_det;
-    u *= inv_det;
-    v *= inv_det;
-
-    v3 r0 = cross(b, v) + k * y;
-    v3 r1 = cross(v, a) - k * x;
-    v3 r2 = cross(d, u) + s * w;
-    v3 r3 = cross(u, c) - s * z;
-
-    return Mat4x4(r0.x, r0.y, r0.z, -dot(b, k), r1.x, r1.y, r1.z, dot(a, k),
-		  r2.x, r2.y, r2.z, -dot(d, s), r3.x, r3.y, r3.z, dot(c, s));
+    return v3{result.x, result.y, result.z};
 }
 
-v3 operator*(const Transform &t, const v3 &v) {
-    v3 result;
-    Mat4x4 m = t.matrix;
-    return v3(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
-	      m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
-	      m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z);
-}
 
-v3 operator*(const Transform &t, const v4 &v) {
-    v3 result;
-    Mat4x4 m = t.matrix;
-    return v3(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
-	      m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
-	      m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z);
+inline v4 operator*(const Mat4x4 &m, v4 p) {
+    v4 result = transform(m, p);
+
+    return result;
 }
 
 template <typename T>
