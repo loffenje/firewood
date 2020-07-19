@@ -34,6 +34,8 @@ struct Renderer2D_Data {
 
   std::array<Texture *, max_texture_slots> texture_slots;
   u32 texture_slot_index = 1;
+  
+  v4 quad_vertices[4];
 };
 
 struct Renderer2D {

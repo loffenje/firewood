@@ -97,7 +97,7 @@ void OpenGLShader::uploadArrayi(const char *name, i32 *values, u32 count)
 
 void OpenGLShader::uploadMat4(const char *name, const Mat4x4 &value) {
   GLint location = open_gl->glGetUniformLocation(program_id, name);
-  open_gl->glUniformMatrix4fv(location, 1, GL_FALSE, value.n[0]);
+  open_gl->glUniformMatrix4fv(location, 1, GL_FALSE, value.e[0]);
 }
 
 void OpenGLShader::uploadFloat4(const char *name, const v4 &value) {
