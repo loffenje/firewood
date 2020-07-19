@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 struct Camera {
+    Camera() = default;
     Camera(f32 left, f32 right, f32 bottom, f32 top)  {
         projection_mat = ortho(left, right, bottom, top, -1.0f, 1.0f);
         view_mat = identity();

@@ -121,6 +121,14 @@ struct Vector3 {
         z = v.z;
     }
 
+    Vector3<T> &operator-() {
+        x = -x;
+        y = -y;
+        z = -z;
+
+        return *this;
+    }
+
     Vector3<T> &operator+=(const Vector3<T> &v) {
 	x += v.x;
 	y += v.y;
@@ -254,6 +262,44 @@ inline Mat4x4 transpose(const Mat4x4 &m) {
     return result;
 }
 
+Mat4x4 affineInverse(Mat4x4 &m) {
+    const v3 &a = reinterpret_cast<const v3 &>(m.e[0]);
+    const v3 &b = reinterpret_cast<const v3 &>(m.e[1]);
+    const v3 &c = reinterpret_cast<const v3 &>(m.e[2]);
+    const v3 &d = reinterpret_cast<const v3 &>(m.e[3]);
+
+    f32 &x = m.e[3][0];
+    f32 &y = m.e[3][1];
+    f32 &z = m.e[3][2];
+    f32 &w = m.e[3][3];
+
+    v3 s = cross(a, b);
+    v3 k = cross(c, d);
+    v3 u = a * y - b * x;
+    v3 v = c * w - d * z;
+
+    f32 inv_det = 1.0f / dot(s, v) + dot(k, u);
+    s *= inv_det;
+    k *= inv_det;
+    u *= inv_det;
+    v *= inv_det;
+
+    v3 r0 = cross(b, v) + k * y;
+    v3 r1 = cross(v, a) - k * x;
+    v3 r2 = cross(d, u) + s * w;
+    v3 r3 = cross(u, c) - s * z;
+
+    Mat4x4 result = {
+        {{r0.x, r0.y, r0.z, -dot(b,k)},
+            {r1.x, r1.y, r1.z, dot(a,k)},
+            {r2.x, r2.y, r2.z, -dot(d,s)},
+            {r3.x, r3.y, r3.z, dot(c,s)}}
+    };
+
+    
+    return result;
+}
+
 Mat4x4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far) {
     Mat4x4 result = identity();
     result.e[0][0] = 2.0f / (right - left);
@@ -266,6 +312,15 @@ Mat4x4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far) {
     return result;
 }
 
+inline Mat4x4 translate(Mat4x4 m, const v3 &delta) {
+    Mat4x4 result = m;
+
+    result.e[0][3] += delta.x;
+    result.e[1][3] += delta.y;
+    result.e[2][3] += delta.z;
+
+    return result;
+}
 
 inline Mat4x4 translate(const v3 &delta) {
     Mat4x4 result = {

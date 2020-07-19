@@ -51,7 +51,7 @@ void Renderer2D::init(RendererAPI *renderer_api, const MemoryStorage &memory) {
                                "v_Color = a_Color;\n"
                                "v_TexCoord = a_TexCoord;\n"
                                "v_TexIndex = a_TexIndex;\n"
-                               "gl_Position = u_ViewProjection * vec4(a_Position, 1.0);\n"
+                               "gl_Position = vec4(a_Position, 1.0) * u_ViewProjection;\n"
                                "}\n\0";
 
   const char *texture_fragment = "#version 410 core\n"
@@ -122,12 +122,8 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &co
  
   f32 tex_index = 0.0f; //white texture
  
-  Mat4x4 tran = identity(); 
-  if (angle != 0.0f) {
-    tran = translate(pos) * rotZ(angle) * scale({size.x, size.y, 1.0f});
-  } else {
-    tran = translate(pos)  * scale({size.x, size.y, 1.0f});
-  }
+  Mat4x4 tran; 
+  tran = translate(pos) * rotZ(angle) * scale({size.x, size.y, 0.0f});
 
   data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
   data.quad_buffer_ptr->color = color;
@@ -176,8 +172,8 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *tex
     data.texture_slot_index++;
   }
    
-  Mat4x4 tran = identity(); 
-  tran = translate(pos)  * scale(v3{size.x, size.y, 1.0f});
+  Mat4x4 tran; 
+  tran = translate(pos)  * rotZ(angle) * scale({size.x, size.y, 1.0f});
   
   data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
   data.quad_buffer_ptr->color = color;

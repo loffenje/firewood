@@ -38,6 +38,7 @@ using namespace std::chrono;
 #define global_var static
 #define local_var static
 
+#define DEBUG
 
 #if defined(DEBUG)
 #define FIREWOOD_INTERNAL // Enable internal components e.g. Debugging 
