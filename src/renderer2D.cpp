@@ -7,10 +7,8 @@ void Renderer2D::init(RendererAPI *renderer_api, const MemoryStorage &memory) {
   data.quad_vbo = VertexBuffer::instance(renderer_api, memory);
   data.quad_vbo->create(max_vertices * sizeof(QuadVertex));
 
-  std::vector<Element> layout = {{Float3, "a_Position"}, 
-                                {Float4, "a_Color"},
-                                {Float2, "a_TexCoord"},
-                                {Float, "a_TexIndex"}};
+  std::vector<Element> layout = {
+      {Float3, "a_Position"}, {Float4, "a_Color"}, {Float2, "a_TexCoord"}, {Float, "a_TexIndex"}};
 
   data.quad_vbo->setLayout(layout);
   data.quad_va->addBuffer(data.quad_vbo);
@@ -66,7 +64,7 @@ void Renderer2D::init(RendererAPI *renderer_api, const MemoryStorage &memory) {
                                  "}\n\0";
 
   data.white_texture = Texture::instance(renderer_api, memory);
-  data.white_texture->create(1,1);
+  data.white_texture->create(1, 1);
 
   u32 white_texture_data = 0xFFFFFFFF;
   data.white_texture->setData(&white_texture_data, sizeof(u32));
@@ -75,14 +73,14 @@ void Renderer2D::init(RendererAPI *renderer_api, const MemoryStorage &memory) {
   for (u32 i = 0; i < max_texture_slots; i++) {
     samplers[i] = i;
   }
-  
+
   data.texture_shader = Shader::instance(renderer_api, memory);
   data.texture_shader->createProgram(texture_vertex, texture_fragment);
   data.texture_shader->bind();
   data.texture_shader->uploadArrayi("u_Textures", samplers, max_texture_slots);
 
   data.texture_slots[0] = data.white_texture;
-  
+
   data.quad_vertices[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
   data.quad_vertices[1] = {0.5f, -0.5f, 0.0f, 1.0f};
   data.quad_vertices[2] = {0.5f, 0.5f, 0.0f, 1.0f};
@@ -96,7 +94,7 @@ void Renderer2D::beginScene(Camera &camera) {
   data.texture_shader->uploadMat4("u_ViewProjection", camera.view_projection_mat);
 
   data.quad_index_count = 0;
-  
+
   data.quad_buffer_ptr = data.quad_buffer_base;
   data.texture_slot_index = 1;
 }
@@ -112,6 +110,16 @@ void Renderer2D::endScene() {
   }
 
   commands.drawIndexed(data.quad_va, data.quad_index_count);
+  DEBUG_PRINT("%s\n","draw call");
+}
+
+void Renderer2D::flushAll() {
+  endScene();
+
+  data.quad_index_count = 0;
+  data.quad_buffer_ptr = data.quad_buffer_base;
+
+  data.texture_slot_index = 1;
 }
 
 void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &color) {
@@ -119,10 +127,14 @@ void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &co
 }
 
 void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &color) {
- 
-  f32 tex_index = 0.0f; //white texture
- 
-  Mat4x4 tran; 
+
+  if (data.quad_index_count >= max_quads) {
+    flushAll();
+  }
+
+  f32 tex_index = 0.0f; // white texture
+
+  Mat4x4 tran;
   tran = translate(pos) * rotZ(angle) * scale({size.x, size.y, 0.0f});
 
   data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
@@ -157,12 +169,17 @@ void Renderer2D::drawQuad(const v2 &pos, const v2 &size, f32 angle, Texture *tex
 }
 
 void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *texture) {
+
+  if (data.quad_index_count >= max_quads) {
+    flushAll();
+  }
+
   v4 color = {1.0f, 1.0f, 1.0f, 1.0f};
   f32 tex_index = 0.0f;
   for (u32 i = 1; i < data.texture_slot_index; i++) {
     if (*(data.texture_slots[i]) == *texture) {
-        tex_index = static_cast<f32>(i);
-        break;
+      tex_index = static_cast<f32>(i);
+      break;
     }
   }
 
@@ -171,10 +188,10 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *tex
     data.texture_slots[data.texture_slot_index] = texture;
     data.texture_slot_index++;
   }
-   
-  Mat4x4 tran; 
-  tran = translate(pos)  * rotZ(angle) * scale({size.x, size.y, 1.0f});
-  
+
+  Mat4x4 tran;
+  tran = translate(pos) * rotZ(angle) * scale({size.x, size.y, 1.0f});
+
   data.quad_buffer_ptr->position = tran * data.quad_vertices[0];
   data.quad_buffer_ptr->color = color;
   data.quad_buffer_ptr->tex_coord = {0.0f, 0.0f};
@@ -202,7 +219,7 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *tex
   data.quad_index_count += 6;
 }
 
-//TODO: Determine when it needs to be called
+// TODO: Determine when it needs to be called
 void Renderer2D::destroy(const MemoryStorage &memory) {
   dealloc<VertexArray>(memory.resource_partition, data.quad_va);
   dealloc<Shader>(memory.resource_partition, data.texture_shader);

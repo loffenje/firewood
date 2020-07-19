@@ -57,6 +57,16 @@ extern "C" UPDATE_AND_RENDER(updateAndRender) {
   renderer_2d.drawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, 0.0f, {0.2f, 0.3f, 0.8f, 1.0f});
   renderer_2d.drawQuad({-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, 0.0f, game_state->material_texture);
   renderer_2d.endScene();
+  
+  renderer_2d.beginScene(game_state->camera_controller.camera);
+    
+  for (float y = -5.0f; y < 5.0f; y += 0.5f) {
+      for (float x = -5.0f; x < 5.0f; x += 0.5f) {
+          v4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
+          renderer_2d.drawQuad({x,y},{0.45f, 0.45f}, 0.0f, color);
+      }
+  }
+  renderer_2d.endScene();
   END_PROFILE();
 
   MEMORY_USAGE(memory);

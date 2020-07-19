@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 namespace {
-constexpr u32 max_quads = 2000;
+constexpr u32 max_quads = 3000;
 constexpr u32 max_vertices = max_quads * 4;
 constexpr u32 max_indices = max_quads * 6;
 constexpr u32 max_texture_slots = 16; // TODO: render settings. Could differ on other GPUs
@@ -43,6 +43,7 @@ struct Renderer2D {
   void destroy(const MemoryStorage &memory);
   void beginScene(Camera &camera);
   void endScene();
+  void flushAll();
   void drawQuad(const v2 &pos, const v2 &size, f32 angle, const v4 &color);
   void drawQuad(const v3 &pos, const v2 &size, f32 angle, const v4 &color);
   void drawQuad(const v2 &pos, const v2 &size, f32 angle, Texture *texture);

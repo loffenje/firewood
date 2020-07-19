@@ -29,6 +29,8 @@ extern DebugTable g_debug_table;
 
 #define END_DEBUG() g_debug_table.clear()
 
+#define DEBUG_PRINT(s, ...) printf(s, __VA_ARGS__)
+
 #define recordDebugEvent(event_type, GUID_init, name_init)                                                             \
   DebugEvent event = {0};                                                                                              \
   event.clock = __rdtsc();                                                                                             \
