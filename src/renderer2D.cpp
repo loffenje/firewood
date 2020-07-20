@@ -184,6 +184,10 @@ void Renderer2D::drawQuad(const v3 &pos, const v2 &size, f32 angle, Texture *tex
   }
 
   if (tex_index == 0.0f) {
+    if (data.texture_slot_index >= max_texture_slots) {
+      flushAll();
+    }
+
     tex_index = static_cast<f32>(data.texture_slot_index);
     data.texture_slots[data.texture_slot_index] = texture;
     data.texture_slot_index++;

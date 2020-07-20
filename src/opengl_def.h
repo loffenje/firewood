@@ -158,7 +158,7 @@ void *OpenGLRendererAPI::getContext() {
 }
 
 void OpenGLRendererAPI::drawIndexed(VertexArray *vertex_array, u32 index_count) {
-  u32 count = index_count ? vertex_array->index_buffer->getCount() : index_count;
+  u32 count = index_count ? index_count : vertex_array->index_buffer->getCount();
   glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
