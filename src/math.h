@@ -178,6 +178,12 @@ inline Vector3<T> operator*(const Vector3<T> &v, T val) {
     return (Vector3<T>(v.x * val, v.y * val, v.z * val));
 }
 
+
+template <typename T>
+inline Vector3<T> operator*(T val, const Vector3<T> &v) {
+    return (Vector3<T>(v.x * val, v.y * val, v.z * val));
+}
+
 template <typename T>
 inline Vector3<T> operator/(const Vector3<T> &v, T val) {
     val = 1.0f / val;

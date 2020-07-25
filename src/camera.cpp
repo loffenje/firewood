@@ -9,7 +9,7 @@ void Camera::recomputeViewMatrix() {
 }
 
 void Camera::setPosition(v3 new_pos) {
-  pos = new_pos;
+  pos = -new_pos;
   recomputeViewMatrix();
 }
 
@@ -35,19 +35,19 @@ struct CameraController {
 void CameraController::update(GameControllerInput *controller_input, f32 dt_for_frame) {
 
   if (controller_input->move_up.ended_down) {
-    camera_pos.y -= camera_move_speed * dt_for_frame;
-  }
-
-  if (controller_input->move_down.ended_down) {
     camera_pos.y += camera_move_speed * dt_for_frame;
   }
 
+  if (controller_input->move_down.ended_down) {
+    camera_pos.y -= camera_move_speed * dt_for_frame;
+  }
+
   if (controller_input->move_right.ended_down) {
-    camera_pos.x -= camera_move_speed * dt_for_frame;
+    camera_pos.x += camera_move_speed * dt_for_frame;
   }
 
   if (controller_input->move_left.ended_down) {
-    camera_pos.x += camera_move_speed * dt_for_frame;
+    camera_pos.x -= camera_move_speed * dt_for_frame;
   }
 
   camera.setPosition(camera_pos);
